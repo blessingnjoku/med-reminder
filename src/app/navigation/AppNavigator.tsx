@@ -1,105 +1,99 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
-import { AddReminderScreen } from '../screens/reminders/AddReminderScreen';
-import { EditReminderScreen } from '../screens/reminders/EditReminderScreen';
-import { HistoryScreen } from '../screens/history/HistoryScreen';
-import { SettingsScreen } from '../screens/settings/SettingsScreen';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { StyleSheet, Platform, View } from "react-native";
+import { MaterialCommunityIcons, Ionicons, Feather, FontAwesome5 } from '@expo/vector-icons';
+import { DashboardScreen } from "../screens/dashboard/DashboardScreen";
+import { colors } from "../theme/colors";
 
-const RootStack = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 
-// Bottom Tab Navigator with 4 tabs (Pills, +, History, Settings)
-const TabNavigator = () => {
+export const AppNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#999999',
-        tabBarStyle: {
-          borderTopWidth: 1,
-          borderTopColor: '#E0E0E0',
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-        },
+        tabBarShowLabel: false,
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textTertiary,
       }}
     >
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          tabBarLabel: 'Reminder',
-          tabBarIcon: () => null, // TODO: Add pills icon
+          tabBarIcon: ({ color, size }) => (
+            <View style={styles.iconBase}>
+              <MaterialCommunityIcons
+                name="pill"
+                color={color}
+                size={size ?? 24}
+              />
+            </View>
+          ),
         }}
       />
       <Tab.Screen
-        name="AddTab"
-        component={DashboardScreen}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            navigation.navigate('AddReminderModal');
-          },
-        })}
+        name="AddReminder"
+        component={() => <View />} // Placeholder
         options={{
-          tabBarLabel: '',
-          tabBarIcon: () => null, // TODO: Add + icon with custom styling
+          tabBarIcon: ({ color, size }) => (
+            <View style={styles.iconBase}>
+              <Ionicons name="add-circle" color={color} size={size ?? 24} />
+            </View>
+          ),
         }}
       />
       <Tab.Screen
-        name="History"
-        component={HistoryScreen}
+        name="Calendar"
+        component={() => <View />} // Placeholder
         options={{
-          tabBarLabel: 'History',
-          tabBarIcon: () => null, // TODO: Add history icon
+          tabBarIcon: ({ color, size }) => (
+            <View style={styles.iconBase}>
+              <Feather name="calendar" color={color} size={size ?? 24} />
+            </View>
+          ),
         }}
       />
       <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
+        name="Reports"
+        component={() => <View />} // Placeholder
         options={{
-          tabBarLabel: 'Settings',
-          tabBarIcon: () => null, // TODO: Add settings icon
+          tabBarIcon: ({ color, size }) => (
+            <View style={styles.iconBase}>
+              <FontAwesome5 name="file-alt" color={color} size={size ?? 24} />
+            </View>
+          ),
         }}
       />
     </Tab.Navigator>
   );
 };
 
-// Root Navigator with modals for Add/Edit Reminder
-export const AppNavigator: React.FC = () => {
-  return (
-    <RootStack.Navigator>
-      <RootStack.Screen
-        name="Tabs"
-        component={TabNavigator}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen
-        name="AddReminderModal"
-        component={AddReminderScreen}
-        options={{
-          presentation: 'modal',
-          headerShown: true,
-          title: 'Schedule your medicine',
-        }}
-      />
-      <RootStack.Screen
-        name="EditReminderModal"
-        component={EditReminderScreen}
-        options={{
-          presentation: 'modal',
-          headerShown: true,
-          title: 'Edit Reminder',
-        }}
-      />
-    </RootStack.Navigator>
-  );
-};
+const styles = StyleSheet.create({
+  tabBar: {
+    height: Platform.OS === "ios" ? 88 : 65,
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.divider,
+    paddingTop: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 20,
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    // Optional: shadow for floating effect
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  iconBase: {
+    width: 24,
+    height: 24,
+
+  },
+});

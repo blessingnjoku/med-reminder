@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { Provider } from 'react-redux';
-import { store } from './src/app/store';
-import { RootNavigator } from './src/app/navigation/RootNavigator';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { AppNavigator } from "./src/app/navigation/AppNavigator";
+import { StatusBar } from "react-native";
+import { colors } from "./src/app/theme/colors";
 
 export default function App() {
-  // TODO: Replace with actual auth state from Redux
-  const [isAuthenticated] = useState(true);
-
   return (
-    <Provider store={store}>
-      <NavigationContainer>
-        <RootNavigator isAuthenticated={isAuthenticated} />
-      </NavigationContainer>
-    </Provider>
+    <NavigationContainer>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+      <AppNavigator />
+    </NavigationContainer>
   );
 }
