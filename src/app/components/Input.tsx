@@ -1,30 +1,46 @@
 import React from 'react';
-import { TextInput, StyleSheet, TextInputProps } from 'react-native';
+import { TextInput, StyleSheet, TextInputProps, View } from 'react-native';
+import { colors } from '../theme/colors';
 
 interface InputProps extends TextInputProps {
   placeholder?: string;
+  error?: boolean;
 }
 
-export const Input: React.FC<InputProps> = ({ placeholder, ...props }) => {
+export const Input: React.FC<InputProps> = ({ placeholder, error = false, ...props }) => {
   return (
-    <TextInput
-      style={styles.input}
-      placeholder={placeholder}
-      placeholderTextColor="#999"
-      {...props}
-    />
+    <View>
+      <TextInput
+        style={[
+          styles.input,
+          error && styles.inputError,
+          props.editable === false && styles.inputDisabled,
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textTertiary}
+        {...props}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: '#E5E5EA',
+    borderColor: colors.border,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
-    marginVertical: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
+  },
+  inputError: {
+    borderColor: colors.error,
+    backgroundColor: colors.error + '08',
+  },
+  inputDisabled: {
+    backgroundColor: colors.background,
+    color: colors.disabled,
   },
 });

@@ -3,12 +3,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Platform, View } from "react-native";
 import { MaterialCommunityIcons, Ionicons, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { DashboardScreen } from "../screens/dashboard/DashboardScreen";
+import { AddReminderScreen } from "../screens/reminders/AddReminderScreen";
+import { HistoryScreen } from "../screens/history/HistoryScreen";
+import { SettingsScreen } from "../screens/settings/SettingsScreen";
 import { colors } from "../theme/colors";
 
 
 const Tab = createBottomTabNavigator();
 
-export const AppNavigator = () => {
+export const AppTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -36,7 +39,7 @@ export const AppNavigator = () => {
       />
       <Tab.Screen
         name="AddReminder"
-        component={() => <View />} // Placeholder
+        component={AddReminderScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconBase}>
@@ -46,8 +49,8 @@ export const AppNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Calendar"
-        component={() => <View />} // Placeholder
+        name="History"
+        component={HistoryScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconBase}>
@@ -57,12 +60,12 @@ export const AppNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Reports"
-        component={() => <View />} // Placeholder
+        name="Settings"
+        component={SettingsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <View style={styles.iconBase}>
-              <FontAwesome5 name="file-alt" color={color} size={size ?? 24} />
+              <MaterialCommunityIcons name="cog" color={color} size={size ?? 24} />
             </View>
           ),
         }}

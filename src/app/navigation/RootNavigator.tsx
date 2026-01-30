@@ -1,22 +1,34 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 import { AppTabs } from "./AppNavigator";
 import { AddReminderScreen } from "../screens/reminders/AddReminderScreen";
-import { LoginScreen } from "../screens/auth/LoginScreen";
+import { AuthNavigator } from "./AuthNavigator";
 
-const RootStack = createStackNavigator();
+const RootStack = createNativeStackNavigator();
 
 export const RootNavigator = () => {
-  const isAuthenticated = true; // Replace with logic from your authSlice
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {!isAuthenticated ? (
-        <RootStack.Screen name="Auth" component={LoginScreen} />
+        <RootStack.Screen 
+          name="AuthStack" 
+          component={AuthNavigator}
+          options={{ animationEnabled: false }}
+        />
       ) : (
         <>
           {/* Main App with Tabs */}
-          <RootStack.Screen name="MainTabs" component={AppTabs} />
+          <RootStack.Screen 
+            name="MainTabs" 
+            component={AppTabs}
+            options={{ animationEnabled: false }}
+          />
 
           {/* Full-screen Modals (No Bottom Nav visible here) */}
           <RootStack.Screen
@@ -29,3 +41,4 @@ export const RootNavigator = () => {
     </RootStack.Navigator>
   );
 };
+ 

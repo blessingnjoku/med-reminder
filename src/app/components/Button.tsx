@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle, ActivityIndicator } from 'react-native';
+import { colors } from '../theme/colors';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'danger';
   disabled?: boolean;
+  loading?: boolean;
+  style?: ViewStyle;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -13,37 +16,60 @@ export const Button: React.FC<ButtonProps> = ({
   onPress,
   variant = 'primary',
   disabled = false,
+  loading = false,
+  style,
 }) => {
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        variant === 'primary' ? styles.primary : styles.secondary,
+        variant === 'primary' && styles.primary,
+        variant === 'secondary' && styles.secondary,
+        variant === 'danger' && styles.danger,
         disabled && styles.disabled,
+        style,
       ]}
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || loading}
+      activeOpacity={0.7}
     >
-      <Text style={[styles.text, variant === 'secondary' && styles.secondaryText]}>
-        {title}
-      </Text>
+      {loading ? (
+        <ActivityIndicator 
+          color={variant === 'danger' ? colors.error : colors.primary}
+          size="small"
+        />
+      ) : (
+        <Text 
+          style={[
+            styles.text,
+            variant === 'secondary' && styles.secondaryText,
+            variant === 'danger' && styles.dangerText,
+          ]}
+        >
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
-    marginVertical: 8,
+    justifyContent: 'center',
+    minHeight: 50,
   },
   primary: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
   },
   secondary: {
-    backgroundColor: '#E5E5EA',
+    backgroundColor: colors.border,
+  },
+  danger: {
+    backgroundColor: colors.error,
   },
   disabled: {
     opacity: 0.5,
@@ -51,9 +77,12 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.textInverse,
   },
   secondaryText: {
-    color: '#000000',
+    color: colors.textPrimary,
+  },
+  dangerText: {
+    color: colors.textInverse,
   },
 });
