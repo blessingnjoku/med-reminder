@@ -20,18 +20,19 @@ export const AppTabs = () => {
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textTertiary,
+        tabBarIconStyle: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
       }}
     >
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <View style={styles.iconBase}>
               <MaterialCommunityIcons
                 name="pill"
                 color={color}
-                size={size ?? 24}
+                size={25}
               />
             </View>
           ),
@@ -41,9 +42,9 @@ export const AppTabs = () => {
         name="AddReminder"
         component={AddReminderScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <View style={styles.iconBase}>
-              <Ionicons name="add-circle" color={color} size={size ?? 24} />
+              <Ionicons name="add-circle" color={color} size={25} />
             </View>
           ),
         }}
@@ -52,9 +53,9 @@ export const AppTabs = () => {
         name="History"
         component={HistoryScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <View style={styles.iconBase}>
-              <Feather name="calendar" color={color} size={size ?? 24} />
+              <Feather name="calendar" color={color} size={25} />
             </View>
           ),
         }}
@@ -63,9 +64,9 @@ export const AppTabs = () => {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <View style={styles.iconBase}>
-              <MaterialCommunityIcons name="cog" color={color} size={size ?? 24} />
+              <MaterialCommunityIcons name="cog" color={color} size={25} />
             </View>
           ),
         }}
@@ -76,11 +77,11 @@ export const AppTabs = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: Platform.OS === "ios" ? 88 : 65,
+    height: Platform.OS === "ios" ? 100 : 75,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.divider,
-    paddingTop: 10,
+    paddingTop: 12,
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 20,

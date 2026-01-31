@@ -18,7 +18,11 @@ import { colors } from '../../theme/colors';
 import { RootState } from '../../../store';
 import { mockReminders, mockAdherence } from '../../../utils/mockReminders';
 
-export const HistoryScreen: React.FC = () => {
+interface HistoryScreenProps {
+  navigation?: any;
+}
+
+export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const reminders = useSelector((state: RootState) => state.reminders.items);
   const adherence = useSelector((state: RootState) => state.adherence.adherence);
@@ -129,7 +133,11 @@ export const HistoryScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader />
+      <AppHeader 
+        showBackButton={navigation ? true : false}
+        onBackPress={() => navigation?.goBack()}
+        title={navigation ? "History" : undefined}
+      />
 
       <ScrollView
         contentContainerStyle={styles.content}
