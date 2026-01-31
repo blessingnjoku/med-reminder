@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
-import { RootState } from '../../../store';
+import { RootState } from '../../store';
 import { colors } from '../theme/colors';
 
 interface AppHeaderProps {
@@ -50,20 +50,30 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   };
 
   /**
-   * Calculate count of reminders due today that haven't been taken
-   * Counts reminders scheduled for today that haven't been completed yet
+   * Calculate count of reminders that are overdue (past their time) and not taken
+   * Only counts reminders whose scheduled time has passed
    */
   const getPendingRemindersCount = () => {
-    const today = dayjs().format('YYYY-MM-DD');
-    const takenReminders = useSelector((state: RootState) => state.adherence.completed);
+    const now = dayjs();
+    const today = now.format('YYYY-MM-DD');
+    const completedToday = useSelector((state: RootState) => state.adherence.completed);
     
-    const todayReminders = reminders.filter(reminder => {
+    const overdueReminders = reminders.filter((reminder: any) => {
       const reminderDate = dayjs(reminder.scheduledDate).format('YYYY-MM-DD');
       const isTodayReminder = reminderDate === today;
-      const notTaken = !takenReminders.includes(reminder.id);
-      return isTodayReminder && notTaken;
+      
+      if (!isTodayReminder) return false;
+      
+      // Check if reminder time has passed
+      const [hours, minutes] = reminder.time.split(':').map(Number);
+      const reminderTime = now.clone().hour(hours).minute(minutes).second(0);
+      const isOverdue = now.isAfter(reminderTime);
+      const notTaken = !completedToday.includes(reminder.id);
+      
+      return isOverdue && notTaken;
     });
-    return todayReminders.length;
+    
+    return overdueReminders.length;
   };
 
   const greeting = getGreeting();
@@ -78,7 +88,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
   const handleNotificationPress = () => {
     // TODO: Navigate to notifications screen or show notification panel
-    console.log('Notification icon pressed - pending reminders:', pendingCount);
   };
 
   return (

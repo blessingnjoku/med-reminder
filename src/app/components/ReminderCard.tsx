@@ -30,11 +30,26 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
 
   const getTimeStatusText = () => {
     if (isCompleted) return 'Taken';
-    if (timeUntil < 0) return `${Math.abs(timeUntil)}m ago`;
+    
+    const absDiff = Math.abs(timeUntil);
+    
+    if (timeUntil < 0) {
+      // Past time
+      if (absDiff < 60) return `${absDiff}m ago`;
+      const hours = Math.floor(absDiff / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    }
+    
     if (timeUntil === 0) return 'Now';
+    
+    // Future time
     if (timeUntil < 60) return `In ${timeUntil}m`;
     const hours = Math.floor(timeUntil / 60);
-    return `In ${hours}h`;
+    if (hours < 24) return `In ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `In ${days}d`;
   };
 
   return (

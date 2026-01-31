@@ -24,11 +24,9 @@ export const notificationService = {
           enableVibrate: true,
           enableLights: true,
         });
-        console.log('✅ Android notification channel created');
       }
 
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log('✅ Notification token:', token);
       return token;
     } catch (error) {
       console.error('Error registering for push notifications:', error);
@@ -46,21 +44,19 @@ export const notificationService = {
       
       const scheduledId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Medication Reminder',
+          title: '💊 Medication Reminder',
           body: `Time to take ${medicationName}`,
           data: { reminderId },
           sound: 'default',
-          badge: 1,
         },
         trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
           hour: hours,
           minute: minutes,
-          repeats: true,
-        } as any,
+        },
       });
-      console.log('✅ Notification scheduled with ID:', scheduledId, 'for reminder:', reminderId, 'at', time);
     } catch (error) {
-      console.error('Error scheduling reminder:', error);
+      console.error('❌ Error scheduling reminder:', error);
       throw error;
     }
   },

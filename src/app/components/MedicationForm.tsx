@@ -522,7 +522,7 @@ export const MedicationForm: React.FC<MedicationFormProps> = ({
                 <Switch
                   value={values.notificationsEnabled}
                   onValueChange={(value: boolean) => {
-                    console.log('Toggle changed to:', value);
+
                     setFieldValue('notificationsEnabled', value);
                   }}
                   trackColor={{ false: colors.textSecondary, true: colors.primary }}
@@ -536,9 +536,6 @@ export const MedicationForm: React.FC<MedicationFormProps> = ({
             <Button
               title={isSubmitting ? `${submitButtonText}...` : submitButtonText}
               onPress={() => {
-                console.log('Submit button pressed');
-                console.log('Form values:', values);
-                console.log('Form errors:', errors);
                 handleSubmit();
               }}
               disabled={isSubmitting || isLoading}

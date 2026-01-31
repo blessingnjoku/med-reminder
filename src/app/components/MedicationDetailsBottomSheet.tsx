@@ -61,9 +61,8 @@ export const MedicationDetailsBottomSheet: React.FC<
                 // Cancel scheduled notification
                 try {
                   await notificationService.cancelReminder(medication.id);
-                  console.log('Notification cancelled for:', medication.id);
                 } catch (notificationError) {
-                  console.error('Error cancelling notification:', notificationError);
+                  // Ignore notification errors, continue with deletion
                 }
 
                 if (config.USE_MOCK_DATA) {

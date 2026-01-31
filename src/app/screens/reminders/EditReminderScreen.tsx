@@ -111,9 +111,8 @@ export const EditReminderScreen: React.FC<any> = ({
             updatedReminder.time,
             updatedReminder.id
           );
-          console.log('Notification rescheduled for:', updatedReminder.medicationName);
         } else {
-          console.log('Notifications disabled for:', updatedReminder.medicationName);
+          // Notifications disabled
         }
       } catch (notificationError) {
         console.error('Error rescheduling notification:', notificationError);
