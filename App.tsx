@@ -1,14 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { AppNavigator } from "./src/app/navigation/AppNavigator";
+import { Provider, useDispatch } from "react-redux";
 import { StatusBar } from "react-native";
+import { store, AppDispatch } from "./src/store";
+import { RootNavigator } from "./src/app/navigation/RootNavigator";
+import { restoreUser, setLoading } from "./src/store/authSlice";
+import { storageService } from "./src/app/services/storage";
 import { colors } from "./src/app/theme/colors";
 
-export default function App() {
+/**
+ * App Initialization Component
+ * Handles loading persisted user data on app startup
+ */
+function AppInitializer() {
+  const dispatch = useDispatch<AppDispatch>();
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        dispatch(setLoading(true));
+
+        // Try to load persisted user from AsyncStorage
+        const persistedUser = await storageService.getUser();
+
+        if (persistedUser) {
+          // User was previously logged in, restore their session
+          dispatch(restoreUser(persistedUser));
+        }
+
+        dispatch(setLoading(false));
+        setIsReady(true);
+      } catch (error) {
+        console.error("Error initializing app:", error);
+        dispatch(setLoading(false));
+        setIsReady(true);
+      }
+    };
+
+    initializeApp();
+  }, [dispatch]);
+
+  if (!isReady) {
+    return null; // Or return a splash screen
+  }
+
   return (
     <NavigationContainer>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-      <AppNavigator />
+      <RootNavigator />
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <Provider store={store}>
+      <AppInitializer />
+    </Provider>
   );
 }

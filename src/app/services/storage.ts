@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   USER: '@med_reminder:user',
   REMINDERS: '@med_reminder:reminders',
   ADHERENCE: '@med_reminder:adherence',
+  REGISTERED_USERS: '@med_reminder:registered_users', // Store all registered users
 };
 
 export const storageService = {
@@ -31,6 +32,56 @@ export const storageService = {
       await AsyncStorage.removeItem(STORAGE_KEYS.USER);
     } catch (error) {
       console.error('Error clearing user:', error);
+      throw error;
+    }
+  },
+
+  // Register a new user with credentials
+  async registerUser(userData: any): Promise<void> {
+    try {
+      // Get existing registered users
+      const usersJson = await AsyncStorage.getItem(STORAGE_KEYS.REGISTERED_USERS);
+      const users = usersJson ? JSON.parse(usersJson) : {};
+      
+      // Store new user by email (simple key-value)
+      users[userData.email] = {
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        password: userData.password, // In production, this should be hashed
+        createdAt: userData.createdAt,
+      };
+      
+      await AsyncStorage.setItem(STORAGE_KEYS.REGISTERED_USERS, JSON.stringify(users));
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error;
+    }
+  },
+
+  // Verify login credentials
+  async verifyCredentials(email: string, password: string): Promise<any> {
+    try {
+      const usersJson = await AsyncStorage.getItem(STORAGE_KEYS.REGISTERED_USERS);
+      const users = usersJson ? JSON.parse(usersJson) : {};
+      
+      const user = users[email];
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      // Check password (in production, use proper hashing/comparison)
+      if (user.password !== password) {
+        throw new Error('Invalid password');
+      }
+      
+      // Return user data without password
+      const { password: _, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      console.error('Error verifying credentials:', error);
       throw error;
     }
   },

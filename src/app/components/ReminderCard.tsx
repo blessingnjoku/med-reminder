@@ -1,21 +1,67 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Reminder } from '../../types/reminder';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { colors } from "../theme/colors";
+import { MockReminder } from "../data/mockData";
 
 interface ReminderCardProps {
-  reminder: Reminder;
+  item: MockReminder;
+  isPriority?: boolean;
   onPress?: () => void;
+  onCheck?: (id: string) => void;
+  isCompleted?: boolean;
 }
 
-export const ReminderCard: React.FC<ReminderCardProps> = ({ reminder, onPress }) => {
+export const ReminderCard: React.FC<ReminderCardProps> = ({
+  item,
+  isPriority,
+  onPress,
+  onCheck,
+  isCompleted,
+}) => {
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.card}>
-        <Text style={styles.title}>{reminder.medicationName}</Text>
-        <Text style={styles.subtitle}>{reminder.dosage}</Text>
-        <Text style={styles.detail}>Time: {reminder.time}</Text>
-        <Text style={styles.detail}>Frequency: {reminder.frequency}</Text>
-        {reminder.notes && <Text style={styles.notes}>{reminder.notes}</Text>}
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={onPress}
+      style={[
+        styles.card,
+        isPriority ? styles.priorityCard : styles.standardCard,
+        isCompleted && styles.completedCard,
+      ]}
+    >
+      <View style={styles.cardContent}>
+        <View style={styles.infoContainer}>
+          <Text
+            style={[
+              styles.medName,
+              isPriority ? styles.textInverse : styles.textPrimary,
+              isCompleted && styles.textCompleted,
+            ]}
+          >
+            {item.medicationName}, {item.mg}mg
+          </Text>
+          <Text
+            style={[
+              styles.medDetails,
+              isPriority ? styles.textInverseDim : styles.textSecondary,
+            ]}
+          >
+            {item.medicationForm} • {item.frequency}
+          </Text>
+          {isPriority && (
+            <Text style={styles.priorityTime}>{item.time} am</Text>
+          )}
+        </View>
+
+        <TouchableOpacity
+          onPress={() => onCheck?.(item.id)}
+          style={[
+            styles.checkbox,
+            isPriority ? styles.checkboxInverse : styles.checkboxStandard,
+            isCompleted && styles.checkboxActive,
+          ]}
+        >
+          {isCompleted && <View style={styles.innerCheck} />}
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -23,38 +69,54 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({ reminder, onPress })
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
     elevation: 3,
   },
-  title: {
+  standardCard: { backgroundColor: colors.surface },
+  priorityCard: { backgroundColor: colors.primary },
+  completedCard: { opacity: 0.6, backgroundColor: colors.surfaceAlt },
+  cardContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  infoContainer: { flex: 1 },
+  medName: { fontSize: 18, fontWeight: "bold", marginBottom: 4 },
+  textPrimary: { color: colors.textPrimary },
+  textSecondary: { color: colors.textSecondary },
+  textInverse: { color: colors.textInverse },
+  textInverseDim: { color: "rgba(255,255,255,0.7)" },
+  textCompleted: { textDecorationLine: "line-through" },
+  priorityTime: {
+    color: colors.textInverse,
+    marginTop: 12,
+    fontWeight: "600",
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 8,
+  checkbox: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 2,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  detail: {
-    fontSize: 12,
-    color: '#999999',
-    marginVertical: 2,
+  checkboxStandard: { borderColor: colors.divider },
+  checkboxInverse: { borderColor: "rgba(255,255,255,0.4)" },
+  checkboxActive: {
+    backgroundColor: colors.accentSuccess,
+    borderColor: colors.accentSuccess,
   },
-  notes: {
-    fontSize: 12,
-    color: '#666666',
-    fontStyle: 'italic',
-    marginTop: 8,
+  innerCheck: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.surface,
   },
 });
