@@ -76,7 +76,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
           />
 
           {/* Sign In Link */}
-          <TouchableOpacity style={styles.signInContainer}>
+          <TouchableOpacity 
+            style={styles.signInContainer}
+            onPress={handleSignIn}
+            activeOpacity={0.7}
+          >
             <Text style={styles.signInText}>Already have an account? </Text>
             <Text style={styles.signInLink}>Sign in</Text>
           </TouchableOpacity>
