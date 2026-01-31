@@ -119,6 +119,11 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
       {/* Adherence Quick Stats */}
       <AdherenceQuickStats reminders={displayReminders} />
 
+      {/* Reminder Label */}
+      <View style={styles.reminderLabelContainer}>
+        <Text style={styles.reminderLabel}>Reminders</Text>
+      </View>
+
       {/* Tab Navigation */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -288,5 +293,14 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     paddingBottom: 20,
+  },
+  reminderLabelContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  reminderLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textPrimary,
   },
 });
