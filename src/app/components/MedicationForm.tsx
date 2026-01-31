@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Switch,
 } from 'react-native';
 import { Formik } from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -31,6 +32,7 @@ interface MedicationFormProps {
     selectedDays?: string[];
     weeklyTime?: string;
     scheduledDate?: string;
+    notificationsEnabled?: boolean;
     notes?: string;
     clinicName?: string;
     doctorName?: string;
@@ -53,6 +55,7 @@ export const MedicationForm: React.FC<MedicationFormProps> = ({
     selectedDays: ['Monday'],
     weeklyTime: '09:00',
     scheduledDate: dayjs().format('YYYY-MM-DD'),
+    notificationsEnabled: true,
     notes: '',
     clinicName: '',
     doctorName: '',
@@ -529,6 +532,28 @@ export const MedicationForm: React.FC<MedicationFormProps> = ({
               )}
             </View>
 
+            {/* Notification Toggle */}
+            <View style={styles.formGroup}>
+              <View style={styles.notificationToggleContainer}>
+                <View>
+                  <Text style={styles.label}>Enable Notifications</Text>
+                  <Text style={styles.toggleDescription}>
+                    Receive reminders at the scheduled time
+                  </Text>
+                </View>
+                <Switch
+                  value={values.notificationsEnabled}
+                  onValueChange={(value: boolean) => {
+                    console.log('Toggle changed to:', value);
+                    setFieldValue('notificationsEnabled', value);
+                  }}
+                  trackColor={{ false: colors.textSecondary, true: colors.primary }}
+                  thumbColor={colors.background}
+                  ios_backgroundColor={colors.textSecondary}
+                />
+              </View>
+            </View>
+
             {/* Submit Button */}
             <Button
               title={isSubmitting ? `${submitButtonText}...` : submitButtonText}
@@ -803,5 +828,22 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 24,
     marginBottom: 20,
+  },
+  notificationToggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.divider,
+  },
+  toggleDescription: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 4,
+    fontWeight: '400',
   },
 });

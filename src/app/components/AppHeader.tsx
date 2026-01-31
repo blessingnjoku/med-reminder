@@ -17,6 +17,7 @@ interface AppHeaderProps {
  * 
  * Displays a greeting with the user's name based on the current time of day.
  * Pulls user data from Redux state.
+ * Shows badge with count of today's pending reminders.
  * 
  * Time-based greetings:
  * - 5:00 - 11:59: "Good morning"
@@ -30,6 +31,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   title 
 }) => {
   const user = useSelector((state: RootState) => state.auth.user);
+  const reminders = useSelector((state: RootState) => state.reminders.items);
   
   // Get current hour
   const hour = dayjs().hour();
@@ -47,8 +49,26 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     }
   };
 
+  /**
+   * Calculate count of reminders due today that haven't been taken
+   * Counts reminders scheduled for today that haven't been completed yet
+   */
+  const getPendingRemindersCount = () => {
+    const today = dayjs().format('YYYY-MM-DD');
+    const takenReminders = useSelector((state: RootState) => state.adherence.completed);
+    
+    const todayReminders = reminders.filter(reminder => {
+      const reminderDate = dayjs(reminder.scheduledDate).format('YYYY-MM-DD');
+      const isTodayReminder = reminderDate === today;
+      const notTaken = !takenReminders.includes(reminder.id);
+      return isTodayReminder && notTaken;
+    });
+    return todayReminders.length;
+  };
+
   const greeting = getGreeting();
   const userFullName = user ? `${user.firstName} ${user.lastName}` : 'User';
+  const pendingCount = getPendingRemindersCount();
   
   // Get user initials for avatar
   const getInitials = () => {
@@ -58,7 +78,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
   const handleNotificationPress = () => {
     // TODO: Navigate to notifications screen or show notification panel
-    console.log('Notification icon pressed');
+    console.log('Notification icon pressed - pending reminders:', pendingCount);
   };
 
   return (
@@ -109,10 +129,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
               size={24}
               color={colors.primary}
             />
-            {/* Optional: Badge for notification count */}
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>3</Text>
-            </View>
+            {/* Badge showing count of today's pending reminders */}
+            {pendingCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>
+                  {pendingCount > 9 ? '9+' : pendingCount}
+                </Text>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
       </View>

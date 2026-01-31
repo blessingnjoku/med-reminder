@@ -13,6 +13,7 @@ import { RootState, AppDispatch } from '../../../store';
 import { updateReminder, setLoading, setError } from '../../../store/reminderSlice';
 import { MedicationForm } from '../../components/MedicationForm';
 import { storageService } from '../../services/storage';
+import { notificationService } from '../../services/notifications';
 import { AppHeader } from '../../components/AppHeader';
 import { colors } from '../../theme/colors';
 import { Reminder } from '../../../types/reminder';
@@ -39,6 +40,7 @@ export const EditReminderScreen: React.FC<any> = ({
     selectedDays: ['Monday'],
     weeklyTime: reminder.time || '09:00',
     scheduledDate: dayjs(reminder.scheduledDate || new Date()).format('YYYY-MM-DD'),
+    notificationsEnabled: reminder.notificationsEnabled ?? true,
     notes: reminder.notes || '',
     clinicName: reminder.clinicName || '',
     doctorName: reminder.doctorName || '',
@@ -59,6 +61,7 @@ export const EditReminderScreen: React.FC<any> = ({
           ? values.weeklyTime 
           : (values.times && values.times[0]) || '08:00',
         scheduledDate: dayjs(values.scheduledDate).toDate(),
+        notificationsEnabled: values.notificationsEnabled ?? true,
         notes: values.notes || undefined,
         clinicName: values.clinicName || undefined,
         doctorName: values.doctorName || undefined,
@@ -75,6 +78,27 @@ export const EditReminderScreen: React.FC<any> = ({
         r.id === reminder.id ? updatedReminder : r
       );
       await storageService.saveReminders(updatedReminders);
+
+      // Reschedule notification with updated time
+      try {
+        // Cancel old notification
+        await notificationService.cancelReminder(updatedReminder.id);
+        
+        // Schedule new notification if enabled
+        if (updatedReminder.notificationsEnabled) {
+          await notificationService.scheduleReminder(
+            updatedReminder.medicationName,
+            updatedReminder.time,
+            updatedReminder.id
+          );
+          console.log('Notification rescheduled for:', updatedReminder.medicationName);
+        } else {
+          console.log('Notifications disabled for:', updatedReminder.medicationName);
+        }
+      } catch (notificationError) {
+        console.error('Error rescheduling notification:', notificationError);
+        // Don't fail the update if notification scheduling fails
+      }
 
       dispatch(setLoading(false));
 

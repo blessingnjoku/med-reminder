@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { AppHeader } from '../../components/AppHeader';
+import { TodayRemindersCarousel } from '../../components/TodayRemindersCarousel';
 import { ReminderCard } from '../../components/ReminderCard';
 import { MedicationDetailsBottomSheet } from '../../components/MedicationDetailsBottomSheet';
 import { colors } from '../../theme/colors';
@@ -98,6 +99,18 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
   return (
     <SafeAreaView style={styles.container}>
       <AppHeader />
+
+      {/* Today's Reminders Carousel */}
+      <TodayRemindersCarousel
+        reminders={displayReminders}
+        onReminderPress={(reminder) => {
+          setSelectedReminder(reminder);
+          setShowDetailsSheet(true);
+        }}
+        onMarkAsTaken={(reminderId) => {
+          dispatch(markReminderAsTaken(reminderId));
+        }}
+      />
 
       {/* Tab Navigation */}
       <View style={styles.tabContainer}>

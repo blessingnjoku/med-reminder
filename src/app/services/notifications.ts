@@ -20,10 +20,15 @@ export const notificationService = {
           importance: Notifications.AndroidImportance.MAX,
           vibrationPattern: [0, 250, 250, 250],
           lightColor: '#FF231F7C',
+          sound: 'default',
+          enableVibrate: true,
+          enableLights: true,
         });
+        console.log('✅ Android notification channel created');
       }
 
       const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log('✅ Notification token:', token);
       return token;
     } catch (error) {
       console.error('Error registering for push notifications:', error);
@@ -38,11 +43,14 @@ export const notificationService = {
   ): Promise<void> {
     try {
       const [hours, minutes] = time.split(':').map(Number);
-      await Notifications.scheduleNotificationAsync({
+      
+      const scheduledId = await Notifications.scheduleNotificationAsync({
         content: {
           title: 'Medication Reminder',
           body: `Time to take ${medicationName}`,
           data: { reminderId },
+          sound: 'default',
+          badge: 1,
         },
         trigger: {
           hour: hours,
@@ -50,6 +58,7 @@ export const notificationService = {
           repeats: true,
         } as any,
       });
+      console.log('✅ Notification scheduled with ID:', scheduledId, 'for reminder:', reminderId, 'at', time);
     } catch (error) {
       console.error('Error scheduling reminder:', error);
       throw error;
