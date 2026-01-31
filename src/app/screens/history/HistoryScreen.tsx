@@ -24,7 +24,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
   // Get reminders for selected date
   const getRemindersForDate = (date: Dayjs) => {
     return displayReminders.filter((reminder) =>
-      dayjs(reminder.createdAt).isSame(date, 'day')
+      dayjs(reminder.scheduledDate).isSame(date, 'day')
     );
   };
 
