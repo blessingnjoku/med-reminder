@@ -5,6 +5,7 @@ export interface Reminder {
   frequency: 'daily' | 'weekly' | 'monthly';
   time: string;
   scheduledDate: Date;
+  notificationsEnabled: boolean;
   notes?: string;
   clinicName?: string;
   doctorName?: string;

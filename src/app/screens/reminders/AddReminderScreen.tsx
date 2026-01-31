@@ -8,11 +8,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+import * as Notifications from 'expo-notifications';
 import dayjs from 'dayjs';
 import { RootState, AppDispatch } from '../../../store';
 import { addReminder, setLoading, setError } from '../../../store/reminderSlice';
 import { MedicationForm } from '../../components/MedicationForm';
 import { storageService } from '../../services/storage';
+import { notificationService } from '../../services/notifications';
 import { AppHeader } from '../../components/AppHeader';
 import { colors } from '../../theme/colors';
 import { Reminder } from '../../../types/reminder';
@@ -54,6 +56,7 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
           ? values.weeklyTime 
           : (values.times && values.times[0]) || '08:00',
         scheduledDate: dayjs(values.scheduledDate).toDate(),
+        notificationsEnabled: values.notificationsEnabled ?? true,
         notes: values.notes || undefined,
         clinicName: values.clinicName || undefined,
         doctorName: values.doctorName || undefined,
@@ -69,6 +72,23 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
       // Persist to AsyncStorage
       const updatedReminders = [...reminders, newReminder];
       await storageService.saveReminders(updatedReminders);
+
+      // Schedule notification for the reminder
+      try {
+        if (newReminder.notificationsEnabled) {
+          await notificationService.scheduleReminder(
+            newReminder.medicationName,
+            newReminder.time,
+            newReminder.id
+          );
+          console.log('Notification scheduled for:', newReminder.medicationName);
+        } else {
+          console.log('Notifications disabled for:', newReminder.medicationName);
+        }
+      } catch (notificationError) {
+        console.error('Error scheduling notification:', notificationError);
+        // Don't fail the reminder creation if notification scheduling fails
+      }
 
       dispatch(setLoading(false));
 

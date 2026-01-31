@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import { AppDispatch, RootState } from '../../store';
 import { deleteReminder } from '../../store/reminderSlice';
 import { storageService } from '../services/storage';
+import { notificationService } from '../services/notifications';
 import { colors } from '../theme/colors';
 import { Reminder } from '../../types/reminder';
 
@@ -62,6 +63,14 @@ export const MedicationDetailsBottomSheet: React.FC<
           onPress: async () => {
             try {
               if (medication) {
+                // Cancel scheduled notification
+                try {
+                  await notificationService.cancelReminder(medication.id);
+                  console.log('Notification cancelled for:', medication.id);
+                } catch (notificationError) {
+                  console.error('Error cancelling notification:', notificationError);
+                }
+
                 dispatch(deleteReminder(medication.id));
                 // Get updated reminders after deletion
                 const updatedReminders = reminders.filter(r => r.id !== medication.id);
@@ -410,7 +419,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   radioButtonChecked: {
-    backgroundColor: colors.accentSuccess + '20',
+    backgroundColor: 'transparent',
   },
   radioInner: {
     width: 8,
