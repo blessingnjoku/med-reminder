@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContentContainer: {
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   reminderLabelContainer: {
     paddingHorizontal: 20,

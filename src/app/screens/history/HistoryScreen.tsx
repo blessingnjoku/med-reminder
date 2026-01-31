@@ -121,20 +121,10 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
       ? Math.round((adherenceStats.taken / adherenceStats.total) * 100)
       : 0;
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <AppHeader 
-        showBackButton={navigation ? true : false}
-        onBackPress={() => navigation?.goBack()}
-        title={navigation ? "History" : undefined}
-      />
-
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Calendar Section */}
-        <View style={styles.calendarSection}>
+  const renderHeader = () => (
+    <>
+      {/* Calendar Section */}
+      <View style={styles.calendarSection}>
           <View style={styles.calendarHeader}>
             <TouchableOpacity
               onPress={() => setSelectedDate(selectedDate.subtract(1, 'month'))}
@@ -183,12 +173,12 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
             >
               <Text style={styles.todayButtonText}>Go to Today</Text>
             </TouchableOpacity>
-          )}
-        </View>
+        )}
+      </View>
 
-        {/* Adherence Summary */}
-        {remindersForDate.length > 0 && (
-          <View style={styles.adherenceCard}>
+      {/* Adherence Summary */}
+      {remindersForDate.length > 0 && (
+        <View style={styles.adherenceCard}>
           <View style={styles.adherenceDetails}>
             <View style={styles.adherenceRow}>
               <Text style={styles.adherenceLabel}>Taken:</Text>
@@ -206,41 +196,54 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
           </View>
         )}
 
-        {/* Reminders for Selected Date */}
-        <View style={styles.remindersSection}>
-          <Text style={styles.sectionTitle}>Medications</Text>
-          {remindersForDate.length > 0 ? (
-            <View style={styles.medicationsListContainer}>
-              <FlatList
-                data={remindersForDate}
-                keyExtractor={(item) => item.id}
-                scrollEnabled={true}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => {
-                  const adherenceData = getAdherenceForDate(
-                    item.id,
-                    selectedDate
-                  );
-                  return (
-                    <ReminderCard
-                      item={item as any}
-                      isPriority={false}
-                      isCompleted={adherenceData?.taken}
-                    />
-                  );
-                }}
+      {/* Section Title */}
+      <Text style={styles.sectionTitle}>Medications</Text>
+    </>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <AppHeader 
+        showBackButton={navigation ? true : false}
+        onBackPress={() => navigation?.goBack()}
+        title={navigation ? "History" : undefined}
+      />
+
+      {remindersForDate.length > 0 ? (
+        <FlatList
+          data={remindersForDate}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={renderHeader}
+          renderItem={({ item }) => {
+            const adherenceData = getAdherenceForDate(
+              item.id,
+              selectedDate
+            );
+            return (
+              <ReminderCard
+                item={item as any}
+                isPriority={false}
+                isCompleted={adherenceData?.taken}
               />
-            </View>
-          ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateIcon}>📋</Text>
-              <Text style={styles.emptyStateText}>
-                No medications scheduled for this date
-              </Text>
-            </View>
-          )}
-        </View>
-      </ScrollView>
+            );
+          }}
+        />
+      ) : (
+        <ScrollView 
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {renderHeader()}
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateIcon}>📋</Text>
+            <Text style={styles.emptyStateText}>
+              No medications scheduled for this date
+            </Text>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -253,6 +256,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     paddingVertical: 16,
+    paddingBottom: 100,
   },
   calendarSection: {
     backgroundColor: colors.surface,
@@ -376,23 +380,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
-  remindersSection: {
-    marginBottom: 20,
-  },
-  medicationsListContainer: {
-    maxHeight: 400,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: 12,
+    paddingHorizontal: 20,
   },
   emptyState: {
     alignItems: 'center',
     paddingVertical: 32,
+    paddingHorizontal: 20,
   },
   emptyStateIcon: {
     fontSize: 48,
