@@ -9,10 +9,10 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
-import { AppDispatch } from '../../store';
+import { AppDispatch, RootState } from '../../store';
 import { deleteReminder } from '../../store/reminderSlice';
 import { storageService } from '../services/storage';
 import { colors } from '../theme/colors';
@@ -30,6 +30,7 @@ export const MedicationDetailsBottomSheet: React.FC<
   MedicationDetailsBottomSheetProps
 > = ({ visible, medication, onClose, onEdit, onMarkAsTaken }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const reminders = useSelector((state: RootState) => state.reminders.items);
   const [isMarkedAsTaken, setIsMarkedAsTaken] = useState(false);
 
   const handleMarkAsTabAction = () => {
@@ -62,8 +63,11 @@ export const MedicationDetailsBottomSheet: React.FC<
             try {
               if (medication) {
                 dispatch(deleteReminder(medication.id));
-                await storageService.saveReminders([]);
+                // Get updated reminders after deletion
+                const updatedReminders = reminders.filter(r => r.id !== medication.id);
+                await storageService.saveReminders(updatedReminders);
                 onClose();
+                Alert.alert('Success', 'Medication deleted successfully!');
               }
             } catch (error) {
               console.error('Error deleting reminder:', error);

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { AppTabs } from "./AppNavigator";
 import { AddReminderScreen } from "../screens/reminders/AddReminderScreen";
+import { EditReminderScreen } from "../screens/reminders/EditReminderScreen";
 import { AuthNavigator } from "./AuthNavigator";
 
 const RootStack = createNativeStackNavigator();
@@ -36,6 +37,14 @@ export const RootNavigator = () => {
           <RootStack.Screen
             name="AddReminder"
             component={AddReminderScreen}
+            options={{
+              presentation: 'card',
+            }}
+          />
+
+          <RootStack.Screen
+            name="EditReminder"
+            component={EditReminderScreen}
             options={{
               presentation: 'card',
             }}

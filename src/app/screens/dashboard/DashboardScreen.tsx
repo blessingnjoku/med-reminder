@@ -21,7 +21,11 @@ import { Reminder } from '../../../types/reminder';
 
 type TabType = 'today' | 'tomorrow' | 'other';
 
-export const DashboardScreen: React.FC = () => {
+interface DashboardScreenProps {
+  navigation: any;
+}
+
+export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState<TabType>('today');
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
@@ -183,8 +187,8 @@ export const DashboardScreen: React.FC = () => {
           setSelectedReminder(null);
         }}
         onEdit={(medication) => {
-          // Handle edit - navigate to edit screen
-          console.log('Edit medication:', medication);
+          // Navigate to edit screen with medication data
+          navigation.navigate('EditReminder', { reminder: medication });
         }}
         onMarkAsTaken={(medicationId) => {
           handleMarkAsTaken(medicationId);
