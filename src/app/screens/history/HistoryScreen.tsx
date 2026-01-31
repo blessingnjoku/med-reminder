@@ -29,12 +29,12 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
 
   // Use mock data if no reminders in Redux
   const displayReminders = reminders.length > 0 ? reminders : mockReminders;
-  const displayAdherence = adherence.length > 0 ? adherence : mockAdherence;
+  const displayAdherence = adherence && adherence.length > 0 ? adherence : mockAdherence;
 
   // Get reminders for selected date
   const getRemindersForDate = (date: Dayjs) => {
     return displayReminders.filter((reminder) =>
-      dayjs(reminder.createdAt).isSame(date, 'day')
+      dayjs(reminder.scheduledDate).isSame(date, 'day')
     );
   };
 
