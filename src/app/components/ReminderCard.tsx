@@ -1,7 +1,11 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { colors } from "../theme/colors";
-import { MockReminder } from "../data/mockData";
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import dayjs from 'dayjs';
+import { colors } from '../theme/colors';
+import { MockReminder } from '../../utils/mockReminders';
+import { getMedicationIcon } from '../../utils/iconMapper';
 
 interface ReminderCardProps {
   item: MockReminder;
@@ -18,6 +22,28 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
   onCheck,
   isCompleted,
 }) => {
+  // Parse time correctly by combining with today's date
+  const now = dayjs();
+  const reminderTimeStr = item.time; // Format: "HH:mm"
+  const [hours, minutes] = reminderTimeStr.split(':');
+  const reminderTime = now.clone().set('hour', parseInt(hours)).set('minute', parseInt(minutes)).set('second', 0);
+  
+  const isUpcoming = reminderTime.isAfter(now);
+  const timeUntil = reminderTime.diff(now, 'minute');
+  
+  const medicationIcon = isCompleted 
+    ? { name: 'check-circle', iconLibrary: 'MaterialCommunityIcons' as const }
+    : getMedicationIcon(item.medicationForm);
+
+  const getTimeStatusText = () => {
+    if (isCompleted) return 'Taken';
+    if (timeUntil < 0) return `${Math.abs(timeUntil)}m ago`;
+    if (timeUntil === 0) return 'Now';
+    if (timeUntil < 60) return `In ${timeUntil}m`;
+    const hours = Math.floor(timeUntil / 60);
+    return `In ${hours}h`;
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -29,39 +55,96 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
       ]}
     >
       <View style={styles.cardContent}>
+        <View style={styles.iconContainer}>
+          <View
+            style={[
+              styles.icon,
+              isPriority ? styles.iconPriority : styles.iconStandard,
+              isCompleted && styles.iconCompleted,
+            ]}
+          >
+            {medicationIcon.iconLibrary === 'MaterialIcons' ? (
+              <MaterialIcons
+                name={medicationIcon.name as any}
+                size={20}
+                color={
+                  isCompleted
+                    ? colors.accentSuccess
+                    : colors.primary
+                }
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={medicationIcon.name as any}
+                size={20}
+                color={
+                  isCompleted
+                    ? colors.accentSuccess
+                    : colors.primary
+                }
+              />
+            )}
+          </View>
+        </View>
+
         <View style={styles.infoContainer}>
           <Text
             style={[
               styles.medName,
-              isPriority ? styles.textInverse : styles.textPrimary,
+              styles.textPrimary,
               isCompleted && styles.textCompleted,
             ]}
           >
-            {item.medicationName}, {item.mg}mg
+            {item.medicationName}
           </Text>
           <Text
             style={[
               styles.medDetails,
-              isPriority ? styles.textInverseDim : styles.textSecondary,
+              styles.textSecondary,
             ]}
           >
-            {item.medicationForm} • {item.frequency}
+            {item.dosage} x {item.mg}mg • {item.medicationForm}
           </Text>
-          {isPriority && (
-            <Text style={styles.priorityTime}>{item.time} am</Text>
-          )}
+          <Text
+            style={[
+              styles.frequency,
+              styles.textSecondary,
+            ]}
+          >
+            {item.frequency}
+          </Text>
         </View>
 
-        <TouchableOpacity
-          onPress={() => onCheck?.(item.id)}
-          style={[
-            styles.checkbox,
-            isPriority ? styles.checkboxInverse : styles.checkboxStandard,
-            isCompleted && styles.checkboxActive,
-          ]}
-        >
-          {isCompleted && <View style={styles.innerCheck} />}
-        </TouchableOpacity>
+        <View style={styles.rightSection}>
+          <Text
+            style={[
+              styles.timeText,
+              styles.textPrimary,
+            ]}
+          >
+            {item.time}
+          </Text>
+          <Text
+            style={[
+              styles.statusText,
+              isCompleted && styles.statusTaken,
+              !isCompleted && isUpcoming && styles.statusUpcoming,
+              !isCompleted && !isUpcoming && styles.statusPast,
+            ]}
+          >
+            {getTimeStatusText()}
+          </Text>
+          <TouchableOpacity
+            onPress={() => onCheck?.(item.id)}
+            style={[
+              styles.checkbox,
+              styles.checkboxStandard,
+              isCompleted && styles.checkboxActive,
+            ]}
+          >
+            {isCompleted && <View style={styles.innerCheck} />}
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -70,53 +153,80 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 24,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    padding: 16,
+    marginBottom: 12,
+    marginHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 2,
   },
   standardCard: { backgroundColor: colors.surface },
-  priorityCard: { backgroundColor: colors.primary },
-  completedCard: { opacity: 0.6, backgroundColor: colors.surfaceAlt },
+  priorityCard: { backgroundColor: colors.surface },
+  completedCard: { opacity: 0.6 },
   cardContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
   },
+  iconContainer: {
+    marginRight: 4,
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconStandard: { backgroundColor: colors.primary + '15' },
+  iconPriority: { backgroundColor: 'rgba(255,255,255,0.2)' },
+  iconCompleted: { backgroundColor: colors.accentSuccess + '15' },
   infoContainer: { flex: 1 },
-  medName: { fontSize: 18, fontWeight: "bold", marginBottom: 4 },
+  medName: { fontSize: 16, fontWeight: '700', marginBottom: 3 },
   textPrimary: { color: colors.textPrimary },
   textSecondary: { color: colors.textSecondary },
   textInverse: { color: colors.textInverse },
-  textInverseDim: { color: "rgba(255,255,255,0.7)" },
-  textCompleted: { textDecorationLine: "line-through" },
-  priorityTime: {
-    color: colors.textInverse,
-    marginTop: 12,
-    fontWeight: "600",
-    fontSize: 16,
+  textInverseDim: { color: 'rgba(255,255,255,0.7)' },
+  textCompleted: { textDecorationLine: 'line-through' },
+  medDetails: { fontSize: 13, fontWeight: '500', marginBottom: 2 },
+  frequency: { fontSize: 12, fontWeight: '400' },
+  rightSection: {
+    alignItems: 'flex-end',
+    gap: 4,
   },
+  timeText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  statusTaken: { color: colors.accentSuccess },
+  statusUpcoming: { color: colors.accentWarning },
+  statusPast: { color: colors.error },
   checkbox: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2,
   },
   checkboxStandard: { borderColor: colors.divider },
-  checkboxInverse: { borderColor: "rgba(255,255,255,0.4)" },
+  checkboxInverse: { borderColor: 'rgba(255,255,255,0.4)' },
   checkboxActive: {
     backgroundColor: colors.accentSuccess,
     borderColor: colors.accentSuccess,
   },
   innerCheck: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: colors.surface,
   },
 });

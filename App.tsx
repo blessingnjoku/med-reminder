@@ -5,6 +5,7 @@ import { StatusBar } from "react-native";
 import { store, AppDispatch } from "./src/store";
 import { RootNavigator } from "./src/app/navigation/RootNavigator";
 import { restoreUser, setLoading } from "./src/store/authSlice";
+import { setReminders } from "./src/store/reminderSlice";
 import { storageService } from "./src/app/services/storage";
 import { colors } from "./src/app/theme/colors";
 
@@ -27,6 +28,12 @@ function AppInitializer() {
         if (persistedUser) {
           // User was previously logged in, restore their session
           dispatch(restoreUser(persistedUser));
+        }
+
+        // Load persisted reminders from AsyncStorage
+        const persistedReminders = await storageService.getReminders();
+        if (persistedReminders && persistedReminders.length > 0) {
+          dispatch(setReminders(persistedReminders));
         }
 
         dispatch(setLoading(false));
