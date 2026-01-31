@@ -199,20 +199,19 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
         {/* Adherence Summary */}
         {remindersForDate.length > 0 && (
           <View style={styles.adherenceCard}>
-            <View style={styles.adherenceCircle}>
-              <Text style={styles.adherencePercentage}>
-                {adherencePercentage}%
-              </Text>
-            </View>
             <View style={styles.adheranceDetails}>
-              <Text style={styles.adheranceDetailsText}>
-                {adherenceStats.taken} of {adherenceStats.total} reminders taken
-              </Text>
-              {adherenceStats.taken < adherenceStats.total && (
-                <Text style={styles.adheranceDetailsMissed}>
-                  {adherenceStats.total - adherenceStats.taken} missed
+              <View style={styles.adheranceRow}>
+                <Text style={styles.adheranceLabel}>Taken:</Text>
+                <Text style={[styles.adheranceValue, { color: colors.success }]}>
+                  {adherenceStats.taken}
                 </Text>
-              )}
+              </View>
+              <View style={styles.adheranceRow}>
+                <Text style={styles.adheranceLabel}>Not Taken:</Text>
+                <Text style={[styles.adheranceValue, { color: colors.error }]}>
+                  {adherenceStats.total - adherenceStats.taken}
+                </Text>
+              </View>
             </View>
           </View>
         )}
@@ -365,42 +364,27 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   adherenceCard: {
-    flexDirection: 'row',
     backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    alignItems: 'center',
-    gap: 16,
-  },
-  adherenceCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primary + '15',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: colors.primary,
-  },
-  adherencePercentage: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primary,
   },
   adheranceDetails: {
-    flex: 1,
+    gap: 12,
   },
-  adheranceDetailsText: {
+  adheranceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  adheranceLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 4,
+    color: colors.textSecondary,
   },
-  adheranceDetailsMissed: {
-    fontSize: 12,
-    color: colors.error,
-    fontWeight: '500',
+  adheranceValue: {
+    fontSize: 18,
+    fontWeight: '700',
   },
   remindersSection: {
     marginBottom: 20,
