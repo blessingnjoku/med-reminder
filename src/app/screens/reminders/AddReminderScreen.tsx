@@ -24,6 +24,21 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
   const loading = useSelector((state: RootState) => state.reminders.loading);
   const reminders = useSelector((state: RootState) => state.reminders.items);
 
+  const handleGoBack = () => {
+    Alert.alert(
+      'Discard Changes',
+      'Are you sure you want to go back? Your medication will not be saved.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Go Back',
+          style: 'destructive',
+          onPress: () => navigation.goBack(),
+        },
+      ]
+    );
+  };
+
   const handleSubmit = async (values: any) => {
     try {
       console.log('Form submitted with values:', values);
@@ -76,7 +91,11 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader />
+      <AppHeader 
+        showBackButton={true}
+        onBackPress={handleGoBack}
+        title="Add Medication"
+      />
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

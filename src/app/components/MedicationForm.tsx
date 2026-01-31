@@ -553,6 +553,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingVertical: 20,
+    paddingBottom: 100,
   },
   formTitle: {
     fontSize: 24,
