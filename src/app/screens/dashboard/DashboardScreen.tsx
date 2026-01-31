@@ -7,17 +7,20 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { AppHeader } from '../../components/AppHeader';
-import { TodayRemindersCarousel } from '../../components/TodayRemindersCarousel';
+import { AdherenceQuickStats } from '../../components/AdherenceQuickStats';
 import { ReminderCard } from '../../components/ReminderCard';
 import { MedicationDetailsBottomSheet } from '../../components/MedicationDetailsBottomSheet';
 import { colors } from '../../theme/colors';
 import { RootState } from '../../../store';
+import { setReminders } from '../../../store/reminderSlice';
 import { mockReminders } from '../../../utils/mockReminders';
 import { markReminderAsTaken } from '../../../store/adherenceSlice';
+import { storageService } from '../../services/storage';
 import { Reminder } from '../../../types/reminder';
 
 type TabType = 'today' | 'tomorrow' | 'other';
@@ -33,6 +36,19 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
   const [showDetailsSheet, setShowDetailsSheet] = useState(false);
   const reminders = useSelector((state: RootState) => state.reminders.items);
   const completedReminders = useSelector((state: RootState) => state.adherence.completed);
+
+  // Reload reminders when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadReminders = async () => {
+        const persistedReminders = await storageService.getReminders();
+        if (persistedReminders && persistedReminders.length > 0) {
+          dispatch(setReminders(persistedReminders));
+        }
+      };
+      loadReminders();
+    }, [dispatch])
+  );
 
   // Use mock data if no reminders in Redux
   const displayReminders = reminders.length > 0 
@@ -100,17 +116,8 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
     <SafeAreaView style={styles.container}>
       <AppHeader />
 
-      {/* Today's Reminders Carousel */}
-      <TodayRemindersCarousel
-        reminders={displayReminders}
-        onReminderPress={(reminder) => {
-          setSelectedReminder(reminder);
-          setShowDetailsSheet(true);
-        }}
-        onMarkAsTaken={(reminderId) => {
-          dispatch(markReminderAsTaken(reminderId));
-        }}
-      />
+      {/* Adherence Quick Stats */}
+      <AdherenceQuickStats reminders={displayReminders} />
 
       {/* Tab Navigation */}
       <View style={styles.tabContainer}>
