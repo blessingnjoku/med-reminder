@@ -206,8 +206,6 @@ const styles = StyleSheet.create({
   medName: { fontSize: 16, fontWeight: '700', marginBottom: 3 },
   textPrimary: { color: colors.textPrimary },
   textSecondary: { color: colors.textSecondary },
-  textInverse: { color: colors.textInverse },
-  textInverseDim: { color: 'rgba(255,255,255,0.7)' },
   textCompleted: { textDecorationLine: 'line-through' },
   medDetails: { fontSize: 13, fontWeight: '500', marginBottom: 2 },
   frequency: { fontSize: 12, fontWeight: '400' },
@@ -236,7 +234,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   checkboxStandard: { borderColor: colors.divider },
-  checkboxInverse: { borderColor: 'rgba(255,255,255,0.4)' },
   checkboxActive: {
     backgroundColor: colors.accentSuccess,
     borderColor: colors.accentSuccess,

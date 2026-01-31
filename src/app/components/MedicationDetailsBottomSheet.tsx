@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -89,13 +89,6 @@ export const MedicationDetailsBottomSheet: React.FC<
         },
       ]
     );
-  };
-
-  const handleMarkAsTaken = () => {
-    if (medication) {
-      onMarkAsTaken(medication.id);
-      onClose();
-    }
   };
 
   if (!medication) return null;
