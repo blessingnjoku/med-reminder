@@ -54,3 +54,20 @@ export const registerValidationSchema = Yup.object().shape({
     .oneOf([Yup.ref('password')], 'Passwords must match')
     .required('Please confirm your password'),
 });
+
+/**
+ * Yup validation schema for medication reminder form
+ */
+export const medicationValidationSchema = Yup.object().shape({
+  medicationName: Yup.string()
+    .min(2, 'Medication name must be at least 2 characters')
+    .max(100, 'Medication name must not exceed 100 characters')
+    .required('Medication name is required'),
+  dosage: Yup.string()
+    .min(1, 'Dosage is required')
+    .max(50, 'Dosage must not exceed 50 characters')
+    .required('Dosage is required'),
+  notes: Yup.string()
+    .max(500, 'Notes must not exceed 500 characters')
+    .nullable(),
+});

@@ -4,7 +4,10 @@ export interface Reminder {
   dosage: string;
   frequency: 'daily' | 'weekly' | 'monthly';
   time: string;
+  scheduledDate: Date;
   notes?: string;
+  clinicName?: string;
+  doctorName?: string;
   createdAt: Date;
   updatedAt: Date;
 }

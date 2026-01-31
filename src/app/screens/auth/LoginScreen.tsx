@@ -6,22 +6,22 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  SafeAreaView,
   Alert,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store';
-import { loginSuccess, setLoading, setError } from '../../store/authSlice';
+import { AppDispatch } from '../../../store';
+import { loginSuccess, setLoading, setError } from '../../../store/authSlice';
 import { storageService } from '../../services/storage';
 import { loginValidationSchema } from '../../../utils/validators';
 import { colors } from '../../theme/colors';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
-import { User } from '../../types/reminder';
+import { User } from '../../../types/reminder';
 
 interface LoginFormValues {
   email: string;
