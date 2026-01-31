@@ -4,6 +4,7 @@ import { StyleSheet, Platform, View } from "react-native";
 import { MaterialCommunityIcons, Ionicons, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { DashboardScreen } from "../screens/dashboard/DashboardScreen";
 import { AddReminderScreen } from "../screens/reminders/AddReminderScreen";
+import { AdherenceStatsScreen } from "../screens/adherence/AdherenceStatsScreen";
 import { HistoryScreen } from "../screens/history/HistoryScreen";
 import { SettingsScreen } from "../screens/settings/SettingsScreen";
 import { colors } from "../theme/colors";
@@ -45,6 +46,17 @@ export const AppTabs = () => {
           tabBarIcon: ({ color }) => (
             <View style={styles.iconBase}>
               <Ionicons name="add-circle" color={color} size={25} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Adherence"
+        component={AdherenceStatsScreen}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <View style={styles.iconBase}>
+              <MaterialCommunityIcons name="chart-line" color={color} size={25} />
             </View>
           ),
         }}
