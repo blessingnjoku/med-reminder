@@ -12,6 +12,8 @@ import dayjs from 'dayjs';
 import { RootState, AppDispatch } from '../../../store';
 import { updateReminder, setLoading, setError } from '../../../store/reminderSlice';
 import { MedicationForm } from '../../components/MedicationForm';
+import { remindersApi } from '../../services/api';
+import { config } from '../../../config/environment';
 import { storageService } from '../../services/storage';
 import { notificationService } from '../../services/notifications';
 import { AppHeader } from '../../components/AppHeader';
@@ -48,7 +50,6 @@ export const EditReminderScreen: React.FC<any> = ({
 
   const handleSubmit = async (values: any) => {
     try {
-      console.log('Updating reminder with values:', values);
       dispatch(setLoading(true));
 
       // Create updated reminder object
@@ -68,16 +69,35 @@ export const EditReminderScreen: React.FC<any> = ({
         updatedAt: new Date(),
       };
 
-      console.log('Updated reminder:', updatedReminder);
+      if (config.USE_MOCK_DATA) {
+        // Mock mode: update Redux and AsyncStorage
+        dispatch(updateReminder(updatedReminder));
+        const updatedReminders = reminders.map(r => 
+          r.id === reminder.id ? updatedReminder : r
+        );
+        await storageService.saveReminders(updatedReminders);
+      } else {
+        // API mode: call backend
+        const response = await remindersApi.updateReminder({
+          id: reminder.id,
+          medicationName: updatedReminder.medicationName,
+          dosage: updatedReminder.dosage,
+          frequency: updatedReminder.frequency,
+          time: updatedReminder.time,
+          scheduledDate: updatedReminder.scheduledDate,
+          notificationsEnabled: updatedReminder.notificationsEnabled,
+          notes: updatedReminder.notes,
+          clinicName: updatedReminder.clinicName,
+          doctorName: updatedReminder.doctorName,
+        });
 
-      // Update in Redux
-      dispatch(updateReminder(updatedReminder));
+        if (!response.data) {
+          throw new Error('Failed to update reminder - no data returned');
+        }
 
-      // Persist to AsyncStorage
-      const updatedReminders = reminders.map(r => 
-        r.id === reminder.id ? updatedReminder : r
-      );
-      await storageService.saveReminders(updatedReminders);
+        // Update Redux with server response
+        dispatch(updateReminder(response.data));
+      }
 
       // Reschedule notification with updated time
       try {

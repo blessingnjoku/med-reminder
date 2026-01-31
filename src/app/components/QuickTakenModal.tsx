@@ -8,13 +8,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
-
-interface QuickTakenModalProps {
-  visible: boolean;
-  medicationName: string | null;
-  onClose: () => void;
-  onMarkAsTaken: () => void;
-}
+import { QuickTakenModalProps } from '../../types/components';
 
 export const QuickTakenModal: React.FC<QuickTakenModalProps> = ({
   visible,

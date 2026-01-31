@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../store';
-import { logout, setLoading } from '../../store/authSlice';
+import { RootState, AppDispatch } from '../../../store';
+import { logout, setLoading } from '../../../store/authSlice';
 import { storageService } from '../../services/storage';
 import { colors } from '../../theme/colors';
 import { Button } from './../../components/Button';

@@ -1,21 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 
-interface AdheranceRecord {
+interface AdherenceRecord {
   reminderId: string;
   date: string;
   taken: boolean;
   missedReason?: string;
 }
 
-interface AdheranceState {
+interface AdherenceState {
   completed: string[];
-  adherence: AdheranceRecord[];
+  adherence: AdherenceRecord[];
   loading: boolean;
   error: string | null;
 }
 
-const initialState: AdheranceState = {
+const initialState: AdherenceState = {
   completed: [],
   adherence: [],
   loading: false,
@@ -108,7 +108,7 @@ const adherenceSlice = createSlice({
       state,
       action: PayloadAction<{
         completed: string[];
-        adherence: AdheranceRecord[];
+        adherence: AdherenceRecord[];
       }>
     ) => {
       state.completed = action.payload.completed;

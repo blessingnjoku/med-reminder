@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-na
 import { useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
-import { RootState } from '../../store';
+import { RootState } from '../../../store';
 import { colors } from '../theme/colors';
 
 interface AppHeaderProps {

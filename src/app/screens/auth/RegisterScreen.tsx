@@ -15,20 +15,15 @@ import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store';
 import { registerSuccess, setLoading, setError } from '../../../store/authSlice';
+import { authApi } from '../../services/api';
+import { config } from '../../../config/environment';
 import { storageService } from '../../services/storage';
 import { registerValidationSchema } from '../../../utils/validators';
 import { colors } from '../../theme/colors';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { User } from '../../../types/reminder';
-
-interface RegisterFormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { RegisterFormValues } from '../../../types/screens';
 
 export const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -39,22 +34,28 @@ export const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       dispatch(setLoading(true));
       setApiError(null);
 
-      // TODO: In production, this would make an API request to your backend
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Create user object with credentials
-      const user = {
-        id: Date.now().toString(),
-        email: values.email,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        password: values.password, // Store password for credential verification
-        createdAt: new Date(),
-      };
-
-      // Register user in AsyncStorage (store credentials)
-      await storageService.registerUser(user);
+      if (config.USE_MOCK_DATA) {
+        // Mock mode: save to AsyncStorage
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const user = {
+          id: Date.now().toString(),
+          email: values.email,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          password: values.password,
+          createdAt: new Date(),
+        };
+        await storageService.registerUser(user);
+      } else {
+        // API mode: call backend
+        await authApi.register({
+          email: values.email,
+          password: values.password,
+          firstName: values.firstName,
+          lastName: values.lastName,
+        });
+        // Token is automatically set in httpClient by authApi
+      }
 
       dispatch(setLoading(false));
       
