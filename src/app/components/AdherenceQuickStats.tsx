@@ -4,10 +4,7 @@ import { useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { getAdherenceSummary } from '../../utils/adherenceHelpers';
-
-interface AdherenceQuickStatsProps {
-  reminders: any[];
-}
+import { AdherenceQuickStatsProps } from '../../types/components';
 
 export const AdherenceQuickStats: React.FC<AdherenceQuickStatsProps> = ({
   reminders,

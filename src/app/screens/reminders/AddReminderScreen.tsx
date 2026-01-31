@@ -13,6 +13,8 @@ import dayjs from 'dayjs';
 import { RootState, AppDispatch } from '../../../store';
 import { addReminder, setLoading, setError } from '../../../store/reminderSlice';
 import { MedicationForm } from '../../components/MedicationForm';
+import { remindersApi } from '../../services/api';
+import { config } from '../../../config/environment';
 import { storageService } from '../../services/storage';
 import { notificationService } from '../../services/notifications';
 import { AppHeader } from '../../components/AppHeader';
@@ -43,14 +45,13 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
 
   const handleSubmit = async (values: any) => {
     try {
-      console.log('Form submitted with values:', values);
       dispatch(setLoading(true));
 
       // Create reminder object
       const newReminder: Reminder = {
         id: Date.now().toString(),
         medicationName: values.medicationName,
-        dosage: values.dosage, // Keep as string as per Reminder interface
+        dosage: values.dosage,
         frequency: values.frequencyType as 'daily' | 'weekly' | 'monthly',
         time: values.frequencyType === 'weekly' 
           ? values.weeklyTime 
@@ -64,14 +65,32 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
         updatedAt: new Date(),
       };
 
-      console.log('Created reminder:', newReminder);
+      if (config.USE_MOCK_DATA) {
+        // Mock mode: save to Redux and AsyncStorage
+        dispatch(addReminder(newReminder));
+        const updatedReminders = [...reminders, newReminder];
+        await storageService.saveReminders(updatedReminders);
+      } else {
+        // API mode: call backend
+        const response = await remindersApi.createReminder({
+          medicationName: newReminder.medicationName,
+          dosage: newReminder.dosage,
+          frequency: newReminder.frequency,
+          time: newReminder.time,
+          scheduledDate: newReminder.scheduledDate,
+          notificationsEnabled: newReminder.notificationsEnabled,
+          notes: newReminder.notes,
+          clinicName: newReminder.clinicName,
+          doctorName: newReminder.doctorName,
+        });
 
-      // Add to Redux
-      dispatch(addReminder(newReminder));
+        if (!response.data) {
+          throw new Error('Failed to create reminder - no data returned');
+        }
 
-      // Persist to AsyncStorage
-      const updatedReminders = [...reminders, newReminder];
-      await storageService.saveReminders(updatedReminders);
+        // Update Redux with server response
+        dispatch(addReminder(response.data));
+      }
 
       // Schedule notification for the reminder
       try {
@@ -81,9 +100,7 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
             newReminder.time,
             newReminder.id
           );
-          console.log('Notification scheduled for:', newReminder.medicationName);
-        } else {
-          console.log('Notifications disabled for:', newReminder.medicationName);
+
         }
       } catch (notificationError) {
         console.error('Error scheduling notification:', notificationError);

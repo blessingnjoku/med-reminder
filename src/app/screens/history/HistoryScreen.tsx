@@ -9,27 +9,17 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
 import dayjs, { Dayjs } from 'dayjs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppHeader } from '../../components/AppHeader';
 import { ReminderCard } from '../../components/ReminderCard';
 import { colors } from '../../theme/colors';
-import { RootState } from '../../../store';
-import { mockReminders, mockAdherence } from '../../../utils/mockReminders';
-
-interface HistoryScreenProps {
-  navigation?: any;
-}
+import { HistoryScreenProps } from '../../../types/screens';
+import { useMockData } from '../../hooks/useMockData';
 
 export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
-  const reminders = useSelector((state: RootState) => state.reminders.items);
-  const adherence = useSelector((state: RootState) => state.adherence.adherence);
-
-  // Use mock data if no reminders in Redux
-  const displayReminders = reminders.length > 0 ? reminders : mockReminders;
-  const displayAdherence = adherence.length > 0 ? adherence : mockAdherence;
+  const { reminders: displayReminders, adherence: displayAdherence } = useMockData();
 
   // Get reminders for selected date
   const getRemindersForDate = (date: Dayjs) => {
@@ -199,16 +189,16 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
         {/* Adherence Summary */}
         {remindersForDate.length > 0 && (
           <View style={styles.adherenceCard}>
-            <View style={styles.adheranceDetails}>
-              <View style={styles.adheranceRow}>
-                <Text style={styles.adheranceLabel}>Taken:</Text>
-                <Text style={[styles.adheranceValue, { color: colors.success }]}>
-                  {adherenceStats.taken}
-                </Text>
-              </View>
-              <View style={styles.adheranceRow}>
-                <Text style={styles.adheranceLabel}>Not Taken:</Text>
-                <Text style={[styles.adheranceValue, { color: colors.error }]}>
+          <View style={styles.adherenceDetails}>
+            <View style={styles.adherenceRow}>
+              <Text style={styles.adherenceLabel}>Taken:</Text>
+              <Text style={[styles.adherenceValue, { color: colors.success }]}>
+                {adherenceStats.taken}
+              </Text>
+            </View>
+            <View style={styles.adherenceRow}>
+              <Text style={styles.adherenceLabel}>Not Taken:</Text>
+              <Text style={[styles.adherenceValue, { color: colors.error }]}>
                   {adherenceStats.total - adherenceStats.taken}
                 </Text>
               </View>
@@ -369,20 +359,20 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  adheranceDetails: {
+  adherenceDetails: {
     gap: 12,
   },
-  adheranceRow: {
+  adherenceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  adheranceLabel: {
+  adherenceLabel: {
     fontSize: 14,
     fontWeight: '600',
     color: colors.textSecondary,
   },
-  adheranceValue: {
+  adherenceValue: {
     fontSize: 18,
     fontWeight: '700',
   },

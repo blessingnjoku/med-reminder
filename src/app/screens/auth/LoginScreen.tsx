@@ -16,17 +16,15 @@ import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store';
 import { loginSuccess, setLoading, setError } from '../../../store/authSlice';
+import { authApi } from '../../services/api';
+import { config } from '../../../config/environment';
 import { storageService } from '../../services/storage';
 import { loginValidationSchema } from '../../../utils/validators';
 import { colors } from '../../theme/colors';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { User } from '../../../types/reminder';
-
-interface LoginFormValues {
-  email: string;
-  password: string;
-}
+import { LoginFormValues } from '../../../types/screens';
 
 export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,31 +35,41 @@ export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       dispatch(setLoading(true));
       setApiError(null);
 
-      // TODO: Replace with actual API call to backend
-      // For now, verify against AsyncStorage registered users
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      let user: User;
 
-      // Verify credentials against registered users in AsyncStorage
-      const user = await storageService.verifyCredentials(
-        values.email,
-        values.password
-      );
+      if (config.USE_MOCK_DATA) {
+        // Mock mode: verify against AsyncStorage
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const verifiedUser = await storageService.verifyCredentials(
+          values.email,
+          values.password
+        );
+        user = {
+          id: verifiedUser.id,
+          email: verifiedUser.email,
+          firstName: verifiedUser.firstName,
+          lastName: verifiedUser.lastName,
+          createdAt: verifiedUser.createdAt,
+        };
+        await storageService.saveUser(user);
+      } else {
+        // API mode: call backend
+        const response = await authApi.login({
+          email: values.email,
+          password: values.password,
+        });
 
-      // Save to AsyncStorage (for session persistence)
-      const sessionUser: User = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        createdAt: user.createdAt,
-      };
-      
-      await storageService.saveUser(sessionUser);
+        if (!response.data) {
+          throw new Error('Login failed - no data returned');
+        }
+
+        user = response.data.user;
+        // Token is automatically set in httpClient by authApi
+        await storageService.saveUser(user);
+      }
 
       // Update Redux with user data
-      dispatch(loginSuccess(sessionUser));
+      dispatch(loginSuccess(user));
       
       dispatch(setLoading(false));
     } catch (error: any) {

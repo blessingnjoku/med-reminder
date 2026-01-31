@@ -16,29 +16,7 @@ import { colors } from '../theme/colors';
 import { Input } from './Input';
 import { Button } from './Button';
 import dayjs from 'dayjs';
-
-interface MedicationFormProps {
-  onSubmit: (values: any) => void;
-  isLoading?: boolean;
-  initialValues?: {
-    medicationName?: string;
-    dosage?: string;
-    dosageUnit?: string;
-    medicationForm?: string;
-    quantity?: string;
-    frequencyType?: string;
-    timesPerDay?: string;
-    times?: string[];
-    selectedDays?: string[];
-    weeklyTime?: string;
-    scheduledDate?: string;
-    notificationsEnabled?: boolean;
-    notes?: string;
-    clinicName?: string;
-    doctorName?: string;
-  };
-  submitButtonText?: string;
-}
+import { MedicationFormProps, MedicationFormValues } from '../../types/components';
 
 export const MedicationForm: React.FC<MedicationFormProps> = ({
   onSubmit,

@@ -14,18 +14,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { AppDispatch, RootState } from '../../store';
 import { deleteReminder } from '../../store/reminderSlice';
+import { remindersApi } from '../services/api';
+import { config } from '../../config/environment';
 import { storageService } from '../services/storage';
 import { notificationService } from '../services/notifications';
 import { colors } from '../theme/colors';
 import { Reminder } from '../../types/reminder';
-
-interface MedicationDetailsBottomSheetProps {
-  visible: boolean;
-  medication: Reminder | null;
-  onClose: () => void;
-  onEdit: (medication: Reminder) => void;
-  onMarkAsTaken: (medicationId: string) => void;
-}
+import { MedicationDetailsBottomSheetProps } from '../../types/components';
 
 export const MedicationDetailsBottomSheet: React.FC<
   MedicationDetailsBottomSheetProps
@@ -71,16 +66,25 @@ export const MedicationDetailsBottomSheet: React.FC<
                   console.error('Error cancelling notification:', notificationError);
                 }
 
-                dispatch(deleteReminder(medication.id));
-                // Get updated reminders after deletion
-                const updatedReminders = reminders.filter(r => r.id !== medication.id);
-                await storageService.saveReminders(updatedReminders);
+                if (config.USE_MOCK_DATA) {
+                  // Mock mode: delete from Redux and AsyncStorage
+                  dispatch(deleteReminder(medication.id));
+                  const updatedReminders = reminders.filter((r: Reminder) => r.id !== medication.id);
+                  await storageService.saveReminders(updatedReminders);
+                } else {
+                  // API mode: call backend
+                  await remindersApi.deleteReminder(medication.id);
+                  
+                  // Update Redux after successful API call
+                  dispatch(deleteReminder(medication.id));
+                }
+
                 onClose();
                 Alert.alert('Success', 'Medication deleted successfully!');
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error('Error deleting reminder:', error);
-              Alert.alert('Error', 'Failed to delete medication');
+              Alert.alert('Error', error.message || 'Failed to delete medication');
             }
           },
         },

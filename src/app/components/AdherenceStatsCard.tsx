@@ -5,10 +5,7 @@ import dayjs from 'dayjs';
 import { LineChart, BarChart, ProgressChart } from 'react-native-chart-kit';
 import { colors } from '../theme/colors';
 import { getAdherenceSummary } from '../../utils/adherenceHelpers';
-
-interface AdherenceStatsCardProps {
-  reminders: any[];
-}
+import { AdherenceStatsCardProps } from '../../types/components';
 
 const screenWidth = Dimensions.get('window').width;
 

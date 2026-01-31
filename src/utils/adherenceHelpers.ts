@@ -20,7 +20,7 @@ export interface WeeklyStats {
   dayStats: DailyStats[];
 }
 
-export interface AdheranceSummary {
+export interface AdherenceSummary {
   today: DailyStats;
   week: WeeklyStats;
   month: { percentage: number; daysTracked: number };
@@ -192,7 +192,7 @@ export const calculateBestStreak = (
 export const getAdherenceSummary = (
   reminders: any[],
   adherenceRecords: AdherenceRecord[]
-): AdheranceSummary => {
+): AdherenceSummary => {
   const today = dayjs();
 
   return {

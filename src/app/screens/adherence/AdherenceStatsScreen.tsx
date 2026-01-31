@@ -1,34 +1,21 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
-  Dimensions,
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { AdherenceStatsCard } from '../../components/AdherenceStatsCard';
 import { colors } from '../../theme/colors';
-import { RootState } from '../../../store';
-import { mockReminders } from '../../../utils/mockReminders';
-import { storageService } from '../../services/storage';
-
-interface AdherenceStatsScreenProps {
-  navigation: any;
-}
+import { AdherenceStatsScreenProps } from '../../../types/screens';
+import { useMockData } from '../../hooks/useMockData';
 
 export const AdherenceStatsScreen: React.FC<AdherenceStatsScreenProps> = ({
   navigation,
 }) => {
-  const reminders = useSelector((state: RootState) => state.reminders.items);
-
-  const displayReminders = useMemo(() => {
-    return reminders.length > 0
-      ? [...(mockReminders as any[]), ...reminders]
-      : (mockReminders as any[]);
-  }, [reminders]);
+  const { reminders: displayReminders } = useMockData();
 
   return (
     <SafeAreaView style={styles.container}>

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,25 +16,22 @@ import { AdherenceQuickStats } from '../../components/AdherenceQuickStats';
 import { ReminderCard } from '../../components/ReminderCard';
 import { MedicationDetailsBottomSheet } from '../../components/MedicationDetailsBottomSheet';
 import { colors } from '../../theme/colors';
-import { RootState } from '../../../store';
+import { RootState, AppDispatch } from '../../../store';
 import { setReminders } from '../../../store/reminderSlice';
-import { mockReminders } from '../../../utils/mockReminders';
 import { markReminderAsTaken } from '../../../store/adherenceSlice';
+import { adherenceApi } from '../../services/api';
+import { config } from '../../../config/environment';
 import { storageService } from '../../services/storage';
 import { Reminder } from '../../../types/reminder';
-
-type TabType = 'today' | 'tomorrow' | 'other';
-
-interface DashboardScreenProps {
-  navigation: any;
-}
+import { TabType, DashboardScreenProps } from '../../../types/screens';
+import { useMockData } from '../../hooks/useMockData';
 
 export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<TabType>('today');
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [showDetailsSheet, setShowDetailsSheet] = useState(false);
-  const reminders = useSelector((state: RootState) => state.reminders.items);
+  const { reminders: displayReminders, isMockData } = useMockData();
   const completedReminders = useSelector((state: RootState) => state.adherence.completed);
 
   // Reload reminders when screen is focused
@@ -46,14 +43,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
           dispatch(setReminders(persistedReminders));
         }
       };
-      loadReminders();
-    }, [dispatch])
+      
+      // Only load from storage if not using mock data
+      if (!isMockData) {
+        loadReminders();
+      }
+    }, [dispatch, isMockData])
   );
-
-  // Use mock data if no reminders in Redux
-  const displayReminders = reminders.length > 0 
-    ? [...(mockReminders as any[]), ...reminders] 
-    : (mockReminders as any[]);
 
   const today = dayjs().startOf('day');
   const tomorrow = today.add(1, 'day');
@@ -80,14 +76,26 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) 
     (reminder) => !isReminderCompleted(reminder.id)
   );
 
-  const handleMarkAsTaken = (reminderId: string) => {
-    dispatch(markReminderAsTaken(reminderId));
+  const handleMarkAsTaken = async (reminderId: string) => {
+    try {
+      if (config.USE_MOCK_DATA) {
+        // Mock mode: just update Redux
+        dispatch(markReminderAsTaken(reminderId));
+      } else {
+        // API mode: call backend
+        await adherenceApi.markAsTaken(reminderId);
+        
+        // Update Redux after successful API call
+        dispatch(markReminderAsTaken(reminderId));
+      }
+    } catch (error: any) {
+      console.error('Error marking reminder as taken:', error);
+      Alert.alert('Error', error.message || 'Failed to mark as taken');
+    }
   };
 
   const getTodayText = () => {
-    const todayStr = today.format('ddd, MMM DD');
-    const isToday = dayjs().startOf('day').isSame(dayjs().startOf('day'));
-    return isToday ? `Today • ${todayStr}` : todayStr;
+    return `Today • ${today.format('ddd, MMM DD')}`;
   };
 
   const getTomorrowText = () => {

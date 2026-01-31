@@ -6,14 +6,7 @@ import dayjs from 'dayjs';
 import { colors } from '../theme/colors';
 import { MockReminder } from '../../utils/mockReminders';
 import { getMedicationIcon } from '../../utils/iconMapper';
-
-interface ReminderCardProps {
-  item: MockReminder;
-  isPriority?: boolean;
-  onPress?: () => void;
-  onCheck?: (id: string) => void;
-  isCompleted?: boolean;
-}
+import { ReminderCardProps } from '../../types/components';
 
 export const ReminderCard: React.FC<ReminderCardProps> = ({
   item,
