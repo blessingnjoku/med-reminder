@@ -6,6 +6,12 @@ import dayjs from 'dayjs';
 import { RootState } from '../../store';
 import { colors } from '../theme/colors';
 
+interface AppHeaderProps {
+  showBackButton?: boolean;
+  onBackPress?: () => void;
+  title?: string;
+}
+
 /**
  * AppHeader Component
  * 
@@ -18,7 +24,11 @@ import { colors } from '../theme/colors';
  * - 18:00 - 21:59: "Good evening"
  * - 22:00 - 4:59: "Good night"
  */
-export const AppHeader: React.FC = () => {
+export const AppHeader: React.FC<AppHeaderProps> = ({ 
+  showBackButton = false, 
+  onBackPress,
+  title 
+}) => {
   const user = useSelector((state: RootState) => state.auth.user);
   
   // Get current hour
@@ -54,17 +64,37 @@ export const AppHeader: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {/* Left side: Avatar */}
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{getInitials()}</Text>
+        {/* Left side: Back Button or Avatar */}
+        {showBackButton ? (
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={onBackPress}
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons
+              name="arrow-left"
+              size={24}
+              color={colors.primary}
+            />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.avatarContainer}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{getInitials()}</Text>
+            </View>
           </View>
-        </View>
+        )}
 
-        {/* Center: Greeting and Name */}
+        {/* Center: Greeting/Title and Name */}
         <View style={styles.textContainer}>
-          <Text style={styles.greeting}>{greeting}</Text>
-          <Text style={styles.name}>{userFullName}</Text>
+          {title ? (
+            <Text style={styles.title}>{title}</Text>
+          ) : (
+            <>
+              <Text style={styles.greeting}>{greeting}</Text>
+              <Text style={styles.name}>{userFullName}</Text>
+            </>
+          )}
         </View>
 
         {/* Right side: Notification Icon */}
@@ -106,6 +136,10 @@ const styles = StyleSheet.create({
   avatarContainer: {
     marginRight: 12,
   },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
   avatar: {
     width: 50,
     height: 50,
@@ -121,6 +155,11 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
   },
   greeting: {
     fontSize: 14,
