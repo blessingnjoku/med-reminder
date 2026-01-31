@@ -221,24 +221,27 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({ navigation }) => {
         <View style={styles.remindersSection}>
           <Text style={styles.sectionTitle}>Medications</Text>
           {remindersForDate.length > 0 ? (
-            <FlatList
-              data={remindersForDate}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              renderItem={({ item }) => {
-                const adherenceData = getAdherenceForDate(
-                  item.id,
-                  selectedDate
-                );
-                return (
-                  <ReminderCard
-                    item={item as any}
-                    isPriority={false}
-                    isCompleted={adherenceData?.taken}
-                  />
-                );
-              }}
-            />
+            <View style={styles.medicationsListContainer}>
+              <FlatList
+                data={remindersForDate}
+                keyExtractor={(item) => item.id}
+                scrollEnabled={true}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const adherenceData = getAdherenceForDate(
+                    item.id,
+                    selectedDate
+                  );
+                  return (
+                    <ReminderCard
+                      item={item as any}
+                      isPriority={false}
+                      isCompleted={adherenceData?.taken}
+                    />
+                  );
+                }}
+              />
+            </View>
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateIcon}>📋</Text>
@@ -401,6 +404,11 @@ const styles = StyleSheet.create({
   },
   remindersSection: {
     marginBottom: 20,
+  },
+  medicationsListContainer: {
+    maxHeight: 400,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   sectionTitle: {
     fontSize: 16,
