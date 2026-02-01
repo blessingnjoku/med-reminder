@@ -38,13 +38,15 @@ export const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         await new Promise(resolve => setTimeout(resolve, 1000));
         const user = {
           id: Date.now().toString(),
-          email: values.email,
-          firstName: values.firstName,
-          lastName: values.lastName,
+          email: values.email.toLowerCase().trim(),
+          firstName: values.firstName.trim(),
+          lastName: values.lastName.trim(),
           password: values.password,
-          createdAt: new Date(),
+          createdAt: new Date().toISOString(),
         };
+        console.log('Registering user:', user.email);
         await storageService.registerUser(user);
+        console.log('Registration completed for:', user.email);
       } else {
         // API mode: call backend
         await authApi.register({
@@ -73,11 +75,12 @@ export const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         ]
       );
     } catch (error: any) {
-      const errorMessage = error.message || 'Registration failed. Please try again.';
+      console.error('Registration error:', error);
+      const errorMessage = error.message || 'Registration failed. Please check your information and try again.';
       setApiError(errorMessage);
       dispatch(setError(errorMessage));
       dispatch(setLoading(false));
-      Alert.alert('Registration Error', errorMessage);
+      Alert.alert('Registration Failed', errorMessage);
     }
   };
 

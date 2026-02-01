@@ -39,8 +39,9 @@ export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       if (config.USE_MOCK_DATA) {
         // Mock mode: verify against AsyncStorage
         await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('Attempting login for:', values.email);
         const verifiedUser = await storageService.verifyCredentials(
-          values.email,
+          values.email.toLowerCase().trim(),
           values.password
         );
         user = {
@@ -50,7 +51,9 @@ export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           lastName: verifiedUser.lastName,
           createdAt: verifiedUser.createdAt,
         };
+        console.log('Saving user to storage:', user.email);
         await storageService.saveUser(user);
+        console.log('Login process completed for:', user.email);
       } else {
         // API mode: call backend
         const response = await authApi.login({
@@ -72,11 +75,18 @@ export const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       
       dispatch(setLoading(false));
     } catch (error: any) {
-      const errorMessage = error.message || 'Invalid email or password';
+      console.error('Login error:', error);
+      let errorMessage = error.message;
+      
+      // Fallback for unknown errors
+      if (!errorMessage) {
+        errorMessage = 'Unable to log in. Please check your email and password.';
+      }
+      
       setApiError(errorMessage);
       dispatch(setError(errorMessage));
       dispatch(setLoading(false));
-      Alert.alert('Login Error', errorMessage);
+      Alert.alert('Login Failed', errorMessage);
     }
   };
 

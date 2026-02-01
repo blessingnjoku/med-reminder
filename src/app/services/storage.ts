@@ -43,15 +43,24 @@ export const storageService = {
       const usersJson = await AsyncStorage.getItem(STORAGE_KEYS.REGISTERED_USERS);
       const users = usersJson ? JSON.parse(usersJson) : {};
       
+      const normalizedEmail = userData.email.toLowerCase().trim();
+      
+      // Check if user already exists
+      if (users[normalizedEmail]) {
+        throw new Error(`An account with email ${userData.email} already exists. Please use a different email or try logging in.`);
+      }
+      
       // Store new user by email (simple key-value)
-      users[userData.email] = {
+      users[normalizedEmail] = {
         id: userData.id,
-        email: userData.email,
+        email: normalizedEmail,
         firstName: userData.firstName,
         lastName: userData.lastName,
         password: userData.password, // In production, this should be hashed
         createdAt: userData.createdAt,
       };
+      
+      console.log('User registered successfully:', normalizedEmail);
       
       await AsyncStorage.setItem(STORAGE_KEYS.REGISTERED_USERS, JSON.stringify(users));
     } catch (error) {
@@ -66,17 +75,21 @@ export const storageService = {
       const usersJson = await AsyncStorage.getItem(STORAGE_KEYS.REGISTERED_USERS);
       const users = usersJson ? JSON.parse(usersJson) : {};
       
-      const user = users[email];
+      console.log('Available registered users:', Object.keys(users));
+      console.log('Looking for user with email:', email);
+      
+      const user = users[email.toLowerCase().trim()]; // Normalize email
       
       if (!user) {
-        throw new Error('User not found');
+        throw new Error(`No account found with email: ${email}. Please check your email or register a new account.`);
       }
       
       // Check password (in production, use proper hashing/comparison)
       if (user.password !== password) {
-        throw new Error('Invalid password');
+        throw new Error('Incorrect password. Please check your password and try again.');
       }
       
+      console.log('Login successful for user:', user.email);
       // Return user data without password
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
