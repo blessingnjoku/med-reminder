@@ -77,7 +77,7 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
                 color={
                   isCompleted
                     ? colors.accentSuccess
-                    : colors.primary
+                    : (medicationIcon as any).color ?? colors.primary
                 }
               />
             ) : (
@@ -87,7 +87,7 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
                 color={
                   isCompleted
                     ? colors.accentSuccess
-                    : colors.primary
+                    : medicationIcon.color
                 }
               />
             )}
