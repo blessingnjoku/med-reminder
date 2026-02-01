@@ -43,7 +43,6 @@ export const MedicationForm: React.FC<MedicationFormProps> = ({
   const [showTimePicker, setShowTimePicker] = React.useState(false);
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [selectedField, setSelectedField] = React.useState<string | null>(null);
-  const [pickerTime, setPickerTime] = React.useState<Date>(new Date());
 
   // Helper function to safely convert time string to Date
   const getDateFromTimeString = (timeString: string): Date => {
@@ -58,21 +57,6 @@ export const MedicationForm: React.FC<MedicationFormProps> = ({
     } catch (error) {
       console.error('Error parsing time string:', timeString, error);
       return new Date();
-    }
-  };
-
-  const handleTimeChange = (
-    event: any,
-    selectedDate: Date | undefined,
-    setFieldValue: any
-  ) => {
-    if (Platform.OS === 'android') {
-      setShowTimePicker(false);
-    }
-
-    if (selectedDate) {
-      const timeString = dayjs(selectedDate).format('HH:mm');
-      setFieldValue('time', timeString);
     }
   };
 

@@ -9,9 +9,10 @@ import { Reminder } from '../../../types/reminder';
 export interface CreateReminderRequest {
   medicationName: string;
   dosage: string;
+  medicationForm?: string;
   frequency: 'daily' | 'weekly' | 'monthly';
   time: string;
-  scheduledDate: Date;
+  scheduledDate: string; // ISO string
   notificationsEnabled?: boolean;
   notes?: string;
   clinicName?: string;

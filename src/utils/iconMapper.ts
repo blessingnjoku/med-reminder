@@ -3,8 +3,6 @@
  * This centralizes icon selection logic for consistency across the app
  */
 
-export type MedicationFormType = 'Pills' | 'Capsules' | 'Liquid' | 'Injection' | 'Drops';
-
 export interface MedicationIconConfig {
   name: string;
   iconLibrary: 'MaterialCommunityIcons' | 'MaterialIcons';
@@ -21,13 +19,13 @@ export const getMedicationIcon = (medicationForm: string): MedicationIconConfig 
     case 'pills':
       return { name: 'pill', iconLibrary: 'MaterialCommunityIcons' };
     case 'capsules':
-      return { name: 'medication', iconLibrary: 'MaterialCommunityIcons' };
+      return { name: 'pill-multiple', iconLibrary: 'MaterialCommunityIcons' };
     case 'liquid':
-      return { name: 'local-drink', iconLibrary: 'MaterialIcons' };
+      return { name: 'cup', iconLibrary: 'MaterialCommunityIcons' };
     case 'injection':
-      return { name: 'syringe', iconLibrary: 'MaterialCommunityIcons' };
+      return { name: 'needle', iconLibrary: 'MaterialCommunityIcons' };
     case 'drops':
-      return { name: 'water-drop', iconLibrary: 'MaterialIcons' };
+      return { name: 'water', iconLibrary: 'MaterialCommunityIcons' };
     default:
       return { name: 'pill', iconLibrary: 'MaterialCommunityIcons' };
   }
@@ -37,5 +35,6 @@ export const getMedicationIcon = (medicationForm: string): MedicationIconConfig 
  * Get a descriptive label for medication form
  */
 export const getMedicationFormLabel = (medicationForm: string): string => {
+  if (!medicationForm) return 'Pills'; // Default fallback
   return medicationForm.charAt(0).toUpperCase() + medicationForm.slice(1);
 };

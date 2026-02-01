@@ -12,6 +12,32 @@ Notifications.setNotificationHandler({
 });
 
 export const notificationService = {
+  /**
+   * Request notification permissions from the user
+   */
+  async requestPermissions(): Promise<boolean> {
+    try {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== 'granted') {
+        console.warn('Failed to get notification permissions');
+        return false;
+      } else {
+        console.log('Notification permissions granted');
+        return true;
+      }
+    } catch (error) {
+      console.error('Error requesting notification permissions:', error);
+      return false;
+    }
+  },
+
   async registerForPushNotifications(): Promise<string | null> {
     try {
       if (Platform.OS === 'android') {

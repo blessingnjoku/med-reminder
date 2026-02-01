@@ -2,20 +2,21 @@ export interface Reminder {
   id: string;
   medicationName: string;
   dosage: string;
+  medicationForm?: string;
   frequency: 'daily' | 'weekly' | 'monthly';
   time: string;
-  scheduledDate: Date;
+  scheduledDate: string; // ISO string
   notificationsEnabled: boolean;
   notes?: string;
   clinicName?: string;
   doctorName?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
 }
 
 export interface ReminderAdherence {
   reminderId: string;
-  date: Date;
+  date: string; // ISO string
   taken: boolean;
   missedReason?: string;
 }
@@ -25,7 +26,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  createdAt: Date;
+  createdAt: string; // ISO string
 }
 
 export interface AuthState {

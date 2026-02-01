@@ -44,7 +44,7 @@ export interface MedicationFormValues {
 }
 
 export interface MedicationFormProps {
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any, formikBag?: any) => void;
   isLoading?: boolean;
   initialValues?: MedicationFormValues;
   submitButtonText?: string;

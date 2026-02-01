@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
-import { LineChart, BarChart, ProgressChart } from 'react-native-chart-kit';
+import {BarChart, ProgressChart } from 'react-native-chart-kit';
 import { colors } from '../theme/colors';
 import { getAdherenceSummary } from '../../utils/adherenceHelpers';
 import { AdherenceStatsCardProps } from '../../types/components';

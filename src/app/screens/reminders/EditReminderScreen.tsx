@@ -34,7 +34,7 @@ export const EditReminderScreen: React.FC<any> = ({
     medicationName: reminder.medicationName || '',
     dosage: reminder.dosage || '',
     dosageUnit: 'mg', // Default or extract from dosage
-    medicationForm: 'Pills', // Default or get from reminder
+    medicationForm: reminder?.medicationForm || 'Pills',
     quantity: '1', // Default or extract
     frequencyType: reminder.frequency || 'daily',
     timesPerDay: '1',
@@ -57,16 +57,17 @@ export const EditReminderScreen: React.FC<any> = ({
         ...reminder,
         medicationName: values.medicationName,
         dosage: values.dosage,
+        medicationForm: values.medicationForm,
         frequency: values.frequencyType as 'daily' | 'weekly' | 'monthly',
         time: values.frequencyType === 'weekly' 
           ? values.weeklyTime 
           : (values.times && values.times[0]) || '08:00',
-        scheduledDate: dayjs(values.scheduledDate).toDate(),
+        scheduledDate: dayjs(values.scheduledDate).toISOString(),
         notificationsEnabled: values.notificationsEnabled ?? true,
         notes: values.notes || undefined,
         clinicName: values.clinicName || undefined,
         doctorName: values.doctorName || undefined,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       };
 
       if (config.USE_MOCK_DATA) {
@@ -82,6 +83,7 @@ export const EditReminderScreen: React.FC<any> = ({
           id: reminder.id,
           medicationName: updatedReminder.medicationName,
           dosage: updatedReminder.dosage,
+          medicationForm: updatedReminder.medicationForm,
           frequency: updatedReminder.frequency,
           time: updatedReminder.time,
           scheduledDate: updatedReminder.scheduledDate,

@@ -43,7 +43,7 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
     );
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: any, { resetForm }: any) => {
     try {
       dispatch(setLoading(true));
 
@@ -52,17 +52,18 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
         id: Date.now().toString(),
         medicationName: values.medicationName,
         dosage: values.dosage,
+        medicationForm: values.medicationForm,
         frequency: values.frequencyType as 'daily' | 'weekly' | 'monthly',
         time: values.frequencyType === 'weekly' 
           ? values.weeklyTime 
           : (values.times && values.times[0]) || '08:00',
-        scheduledDate: dayjs(values.scheduledDate).toDate(),
+        scheduledDate: dayjs(values.scheduledDate).toISOString(),
         notificationsEnabled: values.notificationsEnabled ?? true,
         notes: values.notes || undefined,
         clinicName: values.clinicName || undefined,
         doctorName: values.doctorName || undefined,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       if (config.USE_MOCK_DATA) {
@@ -75,6 +76,7 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
         const response = await remindersApi.createReminder({
           medicationName: newReminder.medicationName,
           dosage: newReminder.dosage,
+          medicationForm: newReminder.medicationForm,
           frequency: newReminder.frequency,
           time: newReminder.time,
           scheduledDate: newReminder.scheduledDate,
@@ -113,6 +115,7 @@ export const AddReminderScreen: React.FC<{ navigation: any }> = ({
         {
           text: 'OK',
           onPress: () => {
+            resetForm(); // Clear the form
             navigation.navigate('Dashboard');
           },
         },

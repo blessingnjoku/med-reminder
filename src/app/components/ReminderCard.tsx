@@ -4,8 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import dayjs from 'dayjs';
 import { colors } from '../theme/colors';
-import { MockReminder } from '../../utils/mockReminders';
-import { getMedicationIcon } from '../../utils/iconMapper';
+import { getMedicationIcon, getMedicationFormLabel } from '../../utils/iconMapper';
 import { ReminderCardProps } from '../../types/components';
 
 export const ReminderCard: React.FC<ReminderCardProps> = ({
@@ -111,7 +110,7 @@ export const ReminderCard: React.FC<ReminderCardProps> = ({
               styles.textSecondary,
             ]}
           >
-            {item.dosage} x {item.mg}mg • {item.medicationForm}
+            {item.dosage} x {item.mg}mg • {getMedicationFormLabel(item.medicationForm)}
           </Text>
           <Text
             style={[
