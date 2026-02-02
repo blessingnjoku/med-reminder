@@ -32,6 +32,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 }) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const reminders = useSelector((state: RootState) => state.reminders.items);
+  const completedToday = useSelector((state: RootState) => state.adherence.completed);
   
   // Get current hour
   const hour = dayjs().hour();
@@ -56,7 +57,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   const getPendingRemindersCount = () => {
     const now = dayjs();
     const today = now.format('YYYY-MM-DD');
-    const completedToday = useSelector((state: RootState) => state.adherence.completed);
     
     const overdueReminders = reminders.filter((reminder: any) => {
       const reminderDate = dayjs(reminder.scheduledDate).format('YYYY-MM-DD');
